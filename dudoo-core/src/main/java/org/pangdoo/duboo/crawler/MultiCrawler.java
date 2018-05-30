@@ -1,6 +1,7 @@
 package org.pangdoo.duboo.crawler;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.exception.NullValueException;
@@ -12,48 +13,46 @@ import org.pangdoo.duboo.robots.RobotsTxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
-import org.pangdoo.duboo.url.collector.DefaultUrlCollector;
 import org.pangdoo.duboo.util.StringUtils;
 
 public class MultiCrawler {
 	
-	private UrlCollector collector;
 	private MultiLoader multiLoader;
 	private Configuration configuration;
+	private RobotsTxtFecher robotsTxtFecher;
 	
-	public MultiCrawler(Configuration configuration, Collection<String> urls, MultiLoader multiLoader) {
-		this(configuration, urls, 1, multiLoader);
-	}
-	
-	public MultiCrawler(Configuration configuration, Collection<String> urls, int depth, MultiLoader multiLoader) {
+	public MultiCrawler(Configuration configuration, MultiLoader multiLoader) {
 		this.configuration = configuration;
-		collector = new DefaultUrlCollector(urls, depth);
-		collector.locations().forEach(location -> {
-			new RobotsTxtFecher(this.configuration, location)
-			.disallow().forEach(v -> {
-				collector.filter(location, v);
-			});
-		});
+		this.robotsTxtFecher = new RobotsTxtFecher(configuration);
 		if (multiLoader == null) {
 			throw new IllegalArgumentException("Loader is null.");
 		}
 		this.multiLoader = multiLoader;
 	}
 	
-	public void crawl(AbstractUrlRequst urlRequst, int delay) throws Exception {
-		Fetcher fetcher = null;
+	public void crawl(AbstractUrlRequst urlRequst, UrlCollector collector) throws Exception {
+		Set<String> locations = collector.locations();
+		for (String location : locations) {
+			robotsTxtFecher.fetch(location);
+			List<String> disallows = robotsTxtFecher.disallow();
+			for (String disallow : disallows) {
+				collector.filter(location, disallow);
+			}
+		}
+		Fetcher fetcher = new Fetcher(configuration);
 		while (collector.hasNext()) {
 			WebUrl webUrl = collector.consume();
 			String url = webUrl.getUrl().toString();
 			urlRequst.setUrl(url);
-			fetcher = new Fetcher(configuration);
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 			if (entity == null) {
 				throw new NullValueException("Http entity is null.");
 			}
 			multiLoader.load(entity.getContent(), getMultiName(url));
-			fetcher.close();
-			Thread.sleep(delay);
+			Thread.sleep(configuration.getDelay());
+		}
+		if (fetcher != null) {
+			fetcher.shutdown();
 		}
 	}
 	

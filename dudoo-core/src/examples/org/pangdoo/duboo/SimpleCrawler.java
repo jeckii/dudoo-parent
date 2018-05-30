@@ -25,7 +25,7 @@ public class SimpleCrawler {
 		Configuration configuration = new Configuration();
 		List<String> urls = new ArrayList<String>();
 		urls.add("https://www.oschina.net/blog?classification=5593654");
-		PageCrawler crawler = new PageCrawler(configuration, urls, new PageParser() {
+		PageCrawler crawler = new PageCrawler(configuration, new PageParser() {
 
 			@Override
 			public Object parse(Document document) {
@@ -39,7 +39,7 @@ public class SimpleCrawler {
 			}
 
 		});
-		List<Object> hrefs = crawler.crawl(new BasicHttpGet(), 1000);
+		List<Object> hrefs = crawler.crawl(new BasicHttpGet(), new DefaultUrlCollector(urls));
 
 		class Blog {
 			private String title;

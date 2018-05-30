@@ -45,9 +45,11 @@ public class MultiCrawlerExecutor {
 				throw new NullValueException("Http entity is null.");
 			}
 			multiLoader.load(entity.getContent(), getMultiName(url));
-			fetcher.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		if (fetcher != null) {
+			fetcher.shutdown();
 		}
 	}
 	

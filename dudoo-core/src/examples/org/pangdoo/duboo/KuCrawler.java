@@ -14,6 +14,7 @@ import org.pangdoo.duboo.crawler.MultiCrawler;
 import org.pangdoo.duboo.handler.MultiLoader;
 import org.pangdoo.duboo.handler.PageParser;
 import org.pangdoo.duboo.request.impl.BasicHttpGet;
+import org.pangdoo.duboo.url.collector.DefaultUrlCollector;
 
 public class KuCrawler {
 	
@@ -23,7 +24,7 @@ public class KuCrawler {
 		Configuration configuration = new Configuration();
 		List<String> urls = new ArrayList<String>();
 		urls.add("http://588ku.com/video/1-0-3-0-pr/");
-		PageCrawler crawler = new PageCrawler(configuration, urls, new PageParser() {
+		PageCrawler crawler = new PageCrawler(configuration, new PageParser() {
 
 			@Override
 			public Object parse(Document document) {
@@ -36,11 +37,11 @@ public class KuCrawler {
 			}
 
 		});
-		List<Object> hrefs = crawler.crawl(new BasicHttpGet(), 1000);
+		List<Object> hrefs = crawler.crawl(new BasicHttpGet(), new DefaultUrlCollector(urls));
 		MultiCrawler multiCrwaler = null;
 		for (Object obj : hrefs) {
 			List<String> href = (List<String>) obj;
-			multiCrwaler = new MultiCrawler(configuration, href, new MultiLoader() {
+			multiCrwaler = new MultiCrawler(configuration, new MultiLoader() {
 				
 				@Override
 				public void load(InputStream input, String name) {
@@ -59,7 +60,7 @@ public class KuCrawler {
 					}
 				}
 			});
-			multiCrwaler.crawl(new BasicHttpGet(), 1000);
+			multiCrwaler.crawl(new BasicHttpGet(), new DefaultUrlCollector(href));
 		}
 	}
 

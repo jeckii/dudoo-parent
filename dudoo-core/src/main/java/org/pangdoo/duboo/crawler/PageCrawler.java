@@ -1,8 +1,8 @@
 package org.pangdoo.duboo.crawler;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
@@ -13,50 +13,48 @@ import org.pangdoo.duboo.request.AbstractUrlRequst;
 import org.pangdoo.duboo.robots.RobotsTxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
 import org.pangdoo.duboo.url.WebUrl;
-import org.pangdoo.duboo.url.collector.DefaultUrlCollector;
 
 public class PageCrawler {
 	
-	private UrlCollector collector;
 	private PageParser parser;
 	private Configuration configuration;
+	private RobotsTxtFecher robotsTxtFecher;
 	
-	public PageCrawler(Configuration configuration, Collection<String> urls, PageParser parser) {
-		this(configuration, urls, 1, parser);
-	}
-	
-	public PageCrawler(Configuration configuration, Collection<String> urls, int depth, PageParser parser) {
+	public PageCrawler(Configuration configuration, PageParser parser) {
 		this.configuration = configuration;
-		collector = new DefaultUrlCollector(urls, depth);
-		collector.locations().forEach(location -> {
-			new RobotsTxtFecher(this.configuration, location)
-			.disallow().forEach(v -> {
-				collector.filter(location, v);
-			});
-		});
+		this.robotsTxtFecher = new RobotsTxtFecher(configuration);
 		if (parser == null) {
 			throw new IllegalArgumentException("Parser is null.");
 		}
 		this.parser = parser;
 	}
 	
-	public List<Object> crawl(AbstractUrlRequst urlRequst, int delay) throws Exception {
+	public List<Object> crawl(AbstractUrlRequst urlRequst, UrlCollector collector) throws Exception {
+		Set<String> locations = collector.locations();
+		for (String location : locations) {
+			robotsTxtFecher.fetch(location);
+			List<String> disallows = robotsTxtFecher.disallow();
+			for (String disallow : disallows) {
+				collector.filter(location, disallow);
+			}
+		}
 		long size = collector.size();
 		if (size == 0L) {
 			return new ArrayList<Object>(0);
 		}
 		List<Object> dataList = new ArrayList<Object>(new Long(size).intValue());
-		Fetcher fetcher;
+		Fetcher fetcher = new Fetcher(configuration);
 		HTMLReader reader;
 		while (collector.hasNext()) {
 			WebUrl webUrl = collector.consume();
-			fetcher = new Fetcher(configuration);
 			urlRequst.setUrl(webUrl.getUrl().toString());
 			HttpResponse response = fetcher.fetch(urlRequst);
 			reader = new HTMLReader(response.getEntity().getContent(), "UTF-8", webUrl.getUrl().baseUrl());
 			dataList.add(parser.parse(reader.getDocument()));
-			fetcher.close();
-			Thread.sleep(delay);
+			Thread.sleep(configuration.getDelay());
+		}
+		if (fetcher != null) {
+			fetcher.shutdown();
 		}
 		return dataList;
 	}

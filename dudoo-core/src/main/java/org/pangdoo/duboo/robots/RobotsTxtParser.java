@@ -1,4 +1,4 @@
-package org.pangdoo.duboo.handler.reader;
+package org.pangdoo.duboo.robots;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +11,12 @@ import java.util.Map;
 
 import org.pangdoo.duboo.util.StringUtils;
 
-public class TxtReader {
+public class RobotsTxtParser {
 	
 	private byte[] bytes;
 	private String charsetName;
 	
-	public TxtReader(InputStream input, String charsetName) throws IOException {
+	public RobotsTxtParser(InputStream input, String charsetName) throws IOException {
 		int toIndex = 0;
 		int index = 0;
 		byte[] temp = new byte[1024];

@@ -50,8 +50,9 @@ public class PageCrawlerExecutor {
 			return parser.parse(reader.getDocument());
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			fetcher.close();
+		}
+		if (fetcher != null) {
+			fetcher.shutdown();
 		}
 		return null;
 	}

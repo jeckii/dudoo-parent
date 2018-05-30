@@ -107,7 +107,7 @@ public class Fetcher {
     	return httpResponse;
     }
     
-    public void close() {
+    public void shutdown() {
     	try {
 			if (response != null) {
 				response.close();
