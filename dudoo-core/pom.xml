@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.pangdoo</groupId>
+    <artifactId>dudoo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>dudoo-core</artifactId>
+  <name>${project.parent.groupId}.${project.artifactId}</name>
+  <description>A Poor Spider</description>
+  
+  <properties>
+  		<java.source>1.8</java.source>
+        <java.target>1.8</java.target>
+        <file.encoding>UTF-8</file.encoding>
+		<apache.http.client.version>4.5.5</apache.http.client.version>
+		<apache.http.core.version>4.4.9</apache.http.core.version>
+		<jsoup.version>1.11.3</jsoup.version>
+	</properties>
+  
+  <dependencies>
+  	    <dependency>
+			<groupId>com.googlecode.juniversalchardet</groupId>
+			<artifactId>juniversalchardet</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${apache.http.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>${apache.http.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>${apache.http.core.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+	    	<version>${jsoup.version}</version>
+	    </dependency>
+  </dependencies>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>${java.source}</source>
+				<target>${java.target}</target>
+				<encoding>${file.encoding}</encoding>
+			</configuration>
+		</plugin>
+  	</plugins>
+  </build>
+</project>
