@@ -43,11 +43,11 @@ public class PageCrawlerExecutor {
 			HttpResponse response = future.get();
 			HttpEntity entity = response.getEntity();
 			if (entity == null) {
-				logger.infop("Abnormal crawl instruction ： {0}", webUrl.getOriginalUrl());
+				logger.warn("Abnormal crawl instruction ： " + webUrl.getOriginalUrl());
 				return null;
 			}
-			HTMLReader reader = new HTMLReader(entity.getContent(), "UTF-8", webUrl.getUrl().baseUrl());
-			return parser.parse(reader.getDocument());
+			return parser.parse(new HTMLReader(entity.getContent(), "UTF-8", webUrl.getUrl().baseUrl())
+					.getDocument());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

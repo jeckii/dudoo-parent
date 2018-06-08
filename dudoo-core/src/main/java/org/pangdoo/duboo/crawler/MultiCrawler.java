@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.http.HttpEntity;
-import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.handler.MultiLoader;
 import org.pangdoo.duboo.request.AbstractUrlRequst;
+import org.pangdoo.duboo.robots.RobotsCache;
 import org.pangdoo.duboo.robots.RobotsTxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
 import org.pangdoo.duboo.url.UrlResolver;
@@ -33,8 +33,10 @@ public class MultiCrawler {
 	public void crawl(AbstractUrlRequst urlRequst, UrlCollector collector) throws Exception {
 		Set<String> locations = collector.locations();
 		for (String location : locations) {
-			robotsTxtFecher.fetch(location);
-			List<String> disallows = robotsTxtFecher.disallow();
+			if (!RobotsCache.hasLocation(location)) {
+				robotsTxtFecher.fetch(location);
+			}
+			List<String> disallows = RobotsCache.get(location).getDisallow();
 			for (String disallow : disallows) {
 				collector.filter(location, disallow);
 			}
@@ -45,11 +47,10 @@ public class MultiCrawler {
 			String url = webUrl.getUrl().toString();
 			urlRequst.setUrl(url);
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
-			if (entity == null) {
-				throw new NullValueException("Http entity is null.");
+			if (entity != null) {
+				multiLoader.load(entity.getContent(), getMultiName(url));
 			}
-			multiLoader.load(entity.getContent(), getMultiName(url));
-			Thread.sleep(configuration.getDelay());
+			wait(configuration.getDelay());
 		}
 		if (fetcher != null) {
 			fetcher.shutdown();

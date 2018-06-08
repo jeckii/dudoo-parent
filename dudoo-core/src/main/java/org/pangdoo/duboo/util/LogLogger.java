@@ -1,46 +1,71 @@
 package org.pangdoo.duboo.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogLogger {
 	
 	private Logger logger;
 	
-	public static <T> LogLogger getLogger(Class<T> clazz) {
-		return new LogLogger(clazz);
+	private static LogLogger instance;
+	
+	public static  LogLogger getLogger(Class<?> clazz) {
+		if (instance == null) {
+			instance = new LogLogger(clazz);
+		}
+		return instance;
 	}
 	
-	private <T> LogLogger(Class<T> clazz) {
-		logger = Logger.getLogger(clazz.getName());
+	private LogLogger(Class<?> clazz) {
+		logger = LoggerFactory.getLogger(clazz);
 	}
 	
-	public void info(String msg) {
-		logger.log(Level.INFO, msg);
+	public void info(String info){
+		logger.info(info);
 	}
 	
-	public void info(Throwable thrown) {
-		logger.log(Level.INFO, null, thrown);
+	public void info(Exception e){
+		logger.info(null, e);
 	}
 	
-	public void infop(String msg, Object... params) {
-		logger.log(Level.INFO, msg, params);
+	public void info(String info, Exception e){
+		logger.info(info, e);
 	}
 	
-	public void info(String msg, Throwable thrown) {
-		logger.log(Level.INFO, msg, thrown);
+	public void debug(String debug){
+		logger.debug(debug);
 	}
 	
-	public void warn(String msg) {
-		logger.log(Level.WARNING, msg);
+	public void debug(Exception e){
+		logger.debug(null, e);
 	}
 	
-	public void warn(Throwable thrown) {
-		logger.log(Level.WARNING, null, thrown);
+	public void debug(String debug, Exception e){
+		logger.debug(debug, e);
 	}
 	
-	public void warn(String msg, Throwable thrown) {
-		logger.log(Level.WARNING, msg, thrown);
+	public void warn(String warn){
+		logger.warn(warn);
+	}
+	
+	public void warn(Exception e){
+		logger.warn(null, e);
+	}
+	
+	public void warn(String warn, Exception e){
+		logger.warn(warn, e);
+	}
+	
+	public void error(String error){
+		logger.error(error);
+	}
+	
+	public void error(Exception e){
+		logger.error(null, e);
+	}
+	
+	public  void error(String error, Exception e){
+		logger.error(error, e);
 	}
 
 }

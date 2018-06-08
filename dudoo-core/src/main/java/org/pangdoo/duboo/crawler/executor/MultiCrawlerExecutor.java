@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.http.HttpEntity;
-import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.HttpResponse;
@@ -41,10 +40,10 @@ public class MultiCrawlerExecutor {
         });
 		try {
 			HttpEntity entity = future.get().getEntity();
-			if (entity == null) {
-				throw new NullValueException("Http entity is null.");
+			if (entity != null) {
+				multiLoader.load(entity.getContent(), getMultiName(url));
 			}
-			multiLoader.load(entity.getContent(), getMultiName(url));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

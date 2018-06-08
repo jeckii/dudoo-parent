@@ -87,9 +87,15 @@ public class HTMLReader {
 	public List<String> segments(Node node, String nodeName) {
 		List<Node> nodes = node.childNodes();
 		List<String> list = new ArrayList<String>(nodes.size());
+		StringBuilder sb = new StringBuilder();
 		for (Node n : nodes) {
 			if (n.nodeName().equalsIgnoreCase(nodeName)) {
-				list.add(n.outerHtml());
+				List<String> texts = textSegments(n);
+				for(String text : texts) {
+					sb.append(text);
+				}
+				list.add(sb.toString());
+				sb.delete(0, sb.length());
 			}
 		}
 		return list;

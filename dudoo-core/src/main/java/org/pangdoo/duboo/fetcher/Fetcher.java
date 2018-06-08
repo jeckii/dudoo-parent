@@ -81,8 +81,8 @@ public class Fetcher {
     
     public HttpResponse fetch(AbstractUrlRequst urlRequst) {
     	HttpResponse httpResponse = new HttpResponse();
-    	HttpUriRequest request = urlRequst.request();
     	try {
+    		HttpUriRequest request = urlRequst.request();
     		response = httpClient.execute(request);
 			httpResponse.setEntity(response.getEntity());
 			httpResponse.setHeaders(response.getAllHeaders());
@@ -102,7 +102,7 @@ public class Fetcher {
 	                }
 			}
     	} catch(Exception e) {
-    		logger.warn("Error URI : " + request.getURI().toString(), e);
+    		logger.warn("Error URI : " + urlRequst.getUrl(), e);
 		}
     	return httpResponse;
     }

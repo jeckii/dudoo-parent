@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
@@ -37,24 +38,34 @@ public class RobotsTxtFecher {
 			if (location == null) {
 				throw new NullValueException("The location is null.");
 			}
+			if (RobotsCache.hasLocation(location)) {
+				return;
+			}
 	    	HttpResponse response = fetcher.fetch(new BasicHttpGet(location + ROBOTS_TXT_PATH));
-	    	if (response.getStatusLine().getStatusCode() == 200) {
-	    		RobotsTxtParser reader = new RobotsTxtParser(response.getEntity().getContent(), "UTF-8");
-	        	items = reader.items(config.getUserAgent());
+	    	if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == 200) {
+	    		HttpEntity entity = response.getEntity();
+	    		if (entity != null) {
+	    			RobotsTxtParser reader = new RobotsTxtParser(entity.getContent(), "UTF-8");
+		        	items = reader.items(config.getUserAgent());
+		        	Robot robot = new Robot();
+		        	robot.setAllow(allow());
+		        	robot.setDisallow(disallow());
+		        	RobotsCache.put(location, robot);
+	    		}
 	    	}
 		} catch (Exception e) {
 			logger.warn(e);
 		}
 	}
 	
-	public List<String> allow() {
+	private List<String> allow() {
 		if (items != null) {
 			return items.get(ALLOW_ITEM);
 		}
 		return new ArrayList<String>(0);
 	}
 	
-	public List<String> disallow() {
+	private List<String> disallow() {
 		if (items != null) {
 			return items.get(DISALLOW_ITEM);
 		}

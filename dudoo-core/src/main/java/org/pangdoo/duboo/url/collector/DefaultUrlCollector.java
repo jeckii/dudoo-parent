@@ -188,33 +188,21 @@ public final class DefaultUrlCollector implements UrlCollector {
 		return removeRemains(url);
 	}
 	
-	private static Map<String, UrlCollector> cache = new HashMap<String, UrlCollector>();
-	
-	public static UrlCollector getCache(String key) {
-		return cache.get(key);
-	}
-	
-	public static Map<String, UrlCollector> cache(String key, UrlCollector value) {
-		cache.put(key, value);
-		return cache;
-	}
-	
 	@Override
 	public int filter(String location, String path) {
 		if (StringUtils.isBlank(location)) {
 			throw new IllegalArgumentException("the domain is null.");
 		}
-		Set<WebUrl> disableds = new HashSet<WebUrl>();
+		int count = 0;
 		for (WebUrl url : urls) {
 			if (location.equals(url.getUrl().getLocation()) 
 					&& StringUtils.pattern(url.getUrl().getPath(), buildPattern(path))) {
-				disableds.add(url);
+				if(urls.remove(url)) {
+					count ++;
+				}
 			}
 		}
-		if (urls.removeAll(disableds)) {
-			return disableds.size();
-		}
-		return 0;
+		return count;
 	}
 	
 	private String buildPattern(String path) {

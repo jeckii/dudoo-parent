@@ -2,7 +2,9 @@ package org.pangdoo.duboo.request.impl;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.request.AbstractUrlRequst;
+import org.pangdoo.duboo.util.StringUtils;
 
 public class BasicHttpGet extends AbstractUrlRequst {
 	
@@ -15,7 +17,10 @@ public class BasicHttpGet extends AbstractUrlRequst {
 	}
 
 	@Override
-	public HttpUriRequest request() {
+	public HttpUriRequest request() throws NullValueException {
+		if (StringUtils.isEmpty(this.url)) {
+			throw new NullValueException("Url is null.");
+		}
 		return new HttpGet(this.url);
 	}
 
