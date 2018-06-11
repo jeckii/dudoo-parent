@@ -1,14 +1,11 @@
 package org.pangdoo.duboo.crawler.executor;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
-import org.pangdoo.duboo.fetcher.HttpResponse;
 import org.pangdoo.duboo.handler.MultiLoader;
 import org.pangdoo.duboo.request.AbstractUrlRequst;
 import org.pangdoo.duboo.url.UrlResolver;
@@ -30,26 +27,22 @@ public class MultiCrawlerExecutor {
 	}
 	
 	public void run(Configuration configuration, WebUrl webUrl, AbstractUrlRequst urlRequst, MultiLoader multiLoader) {
-		String url = webUrl.getUrl().toString();
-		urlRequst.setUrl(url);
-		Fetcher fetcher = new Fetcher(configuration);
-		Future<HttpResponse> future = executors.submit(new Callable<HttpResponse>() {
-            public HttpResponse call() throws Exception {
-                return fetcher.fetch(urlRequst);
-            }
-        });
-		try {
-			HttpEntity entity = future.get().getEntity();
-			if (entity != null) {
-				multiLoader.load(entity.getContent(), getMultiName(url));
-			}
+		executors.submit(new Runnable() {
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (fetcher != null) {
-			fetcher.shutdown();
-		}
+			@Override
+			public void run() {
+				String url = webUrl.getUrl().toString();
+				urlRequst.setUrl(url);
+				Fetcher fetcher = new Fetcher(configuration);
+				HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
+				if (entity != null) {
+					multiLoader.load(entity, getMultiName(url));
+				}
+				if (fetcher != null) {
+					fetcher.shutdown();
+				}
+			}
+		});
 	}
 	
 	private String getMultiName(String url) {

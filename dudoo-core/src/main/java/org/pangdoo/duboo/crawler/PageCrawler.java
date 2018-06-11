@@ -8,7 +8,6 @@ import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.handler.PageParser;
-import org.pangdoo.duboo.handler.reader.HTMLReader;
 import org.pangdoo.duboo.request.AbstractUrlRequst;
 import org.pangdoo.duboo.robots.RobotsCache;
 import org.pangdoo.duboo.robots.RobotsTxtFecher;
@@ -52,11 +51,9 @@ public class PageCrawler {
 			urlRequst.setUrl(webUrl.getUrl().toString());
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 			if (entity != null) {
-				dataList.add(parser
-						.parse(new HTMLReader(entity.getContent(), "UTF-8", webUrl.getUrl().baseUrl())
-								.getDocument()));
+				dataList.add(parser.parse(entity, webUrl.getUrl().baseUrl()));
 			}
-			wait(configuration.getDelay());
+			Thread.sleep(configuration.getDelay());
 		}
 		if (fetcher != null) {
 			fetcher.shutdown();

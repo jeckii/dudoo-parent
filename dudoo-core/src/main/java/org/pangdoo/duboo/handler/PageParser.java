@@ -1,9 +1,9 @@
 package org.pangdoo.duboo.handler;
 
-import org.jsoup.nodes.Document;
+import org.apache.http.HttpEntity;
 
 public interface PageParser {
 	
-	Object parse(Document document);
+	Object parse(HttpEntity entity, String baseUrl);
 	
 }

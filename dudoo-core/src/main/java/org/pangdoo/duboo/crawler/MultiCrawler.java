@@ -48,9 +48,9 @@ public class MultiCrawler {
 			urlRequst.setUrl(url);
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 			if (entity != null) {
-				multiLoader.load(entity.getContent(), getMultiName(url));
+				multiLoader.load(entity, getMultiName(url));
 			}
-			wait(configuration.getDelay());
+			Thread.sleep(configuration.getDelay());
 		}
 		if (fetcher != null) {
 			fetcher.shutdown();

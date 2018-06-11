@@ -1,9 +1,9 @@
 package org.pangdoo.duboo.handler;
 
-import java.io.InputStream;
+import org.apache.http.HttpEntity;
 
 public interface MultiLoader {
 	
-	void load(InputStream input, String name);
+	void load(HttpEntity entity, String name);
 
 }
