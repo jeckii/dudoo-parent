@@ -8,9 +8,10 @@ import java.util.concurrent.Future;
 import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
+import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.fetcher.HttpResponse;
 import org.pangdoo.duboo.handler.PageParser;
-import org.pangdoo.duboo.request.AbstractUrlRequst;
+import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.LogLogger;
 
@@ -20,23 +21,26 @@ public class PageCrawlerExecutor {
 	
 	private ExecutorService executors;
 	
-	private static final int POOL_SIZE = 3;
+	private static final int DEFAULT_POOL_SIZE = 3;
 	
 	public PageCrawlerExecutor() {
-		this(POOL_SIZE);
+		this(DEFAULT_POOL_SIZE);
 	}
 	
 	public PageCrawlerExecutor(int poolSize) {
 		executors = Executors.newFixedThreadPool(poolSize);
 	}
 	
-	public Object run(Configuration configuration, WebUrl webUrl, AbstractUrlRequst urlRequst, PageParser parser) {
+	public Object run(Configuration configuration, WebUrl webUrl, HttpUrlRequst urlRequst, PageParser parser) {
 		Future<Object> future = executors.submit(new Callable<Object>() {
 
 			@Override
 			public Object call() {
 				urlRequst.setUrl(webUrl.getUrl().toString());
-				Fetcher fetcher = new Fetcher(configuration);
+				Fetcher fetcher = FetcherBuilder.custom()
+						.config(configuration)
+						.provider(urlRequst.getCredsProvider())
+						.build();
 				HttpResponse response = fetcher.fetch(urlRequst);
 				HttpEntity entity = response.getEntity();
 				if (entity == null) {

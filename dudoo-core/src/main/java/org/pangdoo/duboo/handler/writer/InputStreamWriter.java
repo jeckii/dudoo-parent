@@ -17,13 +17,13 @@ public class InputStreamWriter {
 		this.bufferSize = bufferSize;
 	}
 
-	public static InputStreamWriter newInstance(String path, String fileName) {
-		return new InputStreamWriter(path, fileName);
+	public static InputStreamWriter newInstance(String pathname) {
+		return new InputStreamWriter(pathname);
 	}
 	
-	private InputStreamWriter(String path, String fileName) {
+	private InputStreamWriter(String pathname) {
 		try {
-			file = new RandomAccessFile(new File(path + File.separator + fileName), "rw");
+			file = new RandomAccessFile(new File(pathname), "rw");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

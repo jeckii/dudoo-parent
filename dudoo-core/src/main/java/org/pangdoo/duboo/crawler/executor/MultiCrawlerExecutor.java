@@ -6,8 +6,9 @@ import java.util.concurrent.Executors;
 import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
+import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.MultiLoader;
-import org.pangdoo.duboo.request.AbstractUrlRequst;
+import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.StringUtils;
@@ -16,24 +17,27 @@ public class MultiCrawlerExecutor {
 	
 	private ExecutorService executors;
 	
-	private static final int POOL_SIZE = 3;
+	private static final int DEFAULT_POOL_SIZE = 3;
 	
 	public MultiCrawlerExecutor() {
-		this(POOL_SIZE);
+		this(DEFAULT_POOL_SIZE);
 	}
 	
 	public MultiCrawlerExecutor(int poolSize) {
 		executors = Executors.newFixedThreadPool(poolSize);
 	}
 	
-	public void run(Configuration configuration, WebUrl webUrl, AbstractUrlRequst urlRequst, MultiLoader multiLoader) {
+	public void run(Configuration configuration, WebUrl webUrl, HttpUrlRequst urlRequst, MultiLoader multiLoader) {
 		executors.submit(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				String url = webUrl.getUrl().toString();
 				urlRequst.setUrl(url);
-				Fetcher fetcher = new Fetcher(configuration);
+				Fetcher fetcher = FetcherBuilder.custom()
+						.config(configuration)
+						.provider(urlRequst.getCredsProvider())
+						.build();
 				HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 				if (entity != null) {
 					multiLoader.load(entity, getMultiName(url));

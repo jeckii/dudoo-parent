@@ -9,7 +9,7 @@ public class LogLogger {
 	
 	private static LogLogger instance;
 	
-	public static  LogLogger getLogger(Class<?> clazz) {
+	public static LogLogger getLogger(Class<?> clazz) {
 		if (instance == null) {
 			instance = new LogLogger(clazz);
 		}

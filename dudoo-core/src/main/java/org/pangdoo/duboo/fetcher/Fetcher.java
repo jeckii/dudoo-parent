@@ -9,6 +9,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -23,24 +24,40 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.ssl.SSLContexts;
-import org.pangdoo.duboo.request.AbstractUrlRequst;
+import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.util.LogLogger;
 
 public class Fetcher {
 	
 	private LogLogger logger = LogLogger.getLogger(Fetcher.class);
 	
-	public Fetcher(Configuration config) {
+	protected Fetcher() {
+	}
+	
+	protected Fetcher(Configuration config) {
 		this.config = config;
-		build();
 	}
 	
 	protected Configuration config;
 	protected PoolingHttpClientConnectionManager connectionManager;
     protected CloseableHttpClient httpClient;
-    protected CloseableHttpResponse response = null;
+    protected CloseableHttpResponse response;
+    protected CredentialsProvider credsProvider;
     
-    private Fetcher build() {
+    public Fetcher config(Configuration config) {
+    	if (this.config != null) {
+    		
+    	}
+    	this.config = config;
+    	return this;
+    }
+    
+    public Fetcher provider(CredentialsProvider credsProvider) {
+    	this.credsProvider = credsProvider;
+    	return this;
+    }
+    
+    public Fetcher build() {
     	 RequestConfig requestConfig = RequestConfig.custom()
                  .setExpectContinueEnabled(false)
                  .setCookieSpec(config.getCookieSpec())
@@ -75,11 +92,14 @@ public class Fetcher {
          clientBuilder.setDefaultRequestConfig(requestConfig);
          clientBuilder.setUserAgent(config.getUserAgent());
          clientBuilder.setConnectionManager(connectionManager);
+         if (credsProvider != null) {
+        	 clientBuilder.setDefaultCredentialsProvider(credsProvider);
+         }
          httpClient = clientBuilder.build();
          return this;
     }
     
-    public HttpResponse fetch(AbstractUrlRequst urlRequst) {
+    public HttpResponse fetch(HttpUrlRequst urlRequst) {
     	HttpResponse httpResponse = new HttpResponse();
     	try {
     		HttpUriRequest request = urlRequst.request();

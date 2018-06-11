@@ -8,6 +8,7 @@ import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
+import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.fetcher.HttpResponse;
 import org.pangdoo.duboo.request.impl.BasicHttpGet;
 import org.pangdoo.duboo.util.LogLogger;
@@ -30,7 +31,7 @@ public class RobotsTxtFecher {
 	
 	public RobotsTxtFecher(Configuration config) {
 		this.config = config;
-		this.fetcher = new Fetcher(config);
+		this.fetcher = FetcherBuilder.build(config);
 	}
 	
 	public void fetch(String location) {
