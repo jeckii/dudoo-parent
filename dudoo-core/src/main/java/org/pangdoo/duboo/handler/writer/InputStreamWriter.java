@@ -1,14 +1,14 @@
 package org.pangdoo.duboo.handler.writer;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 public class InputStreamWriter {
 	
-	private RandomAccessFile file;
+	private FileOutputStream fos;
 	private FileChannel fileChannel;
 	
 	private int bufferSize = 1024*1024;
@@ -21,22 +21,41 @@ public class InputStreamWriter {
 		return new InputStreamWriter(pathname);
 	}
 	
+	public static InputStreamWriter newInstance(String path, String fileName) {
+		return new InputStreamWriter(path, fileName);
+	}
+	
 	private InputStreamWriter(String pathname) {
 		try {
-			file = new RandomAccessFile(new File(pathname), "rw");
+			fos = new FileOutputStream(new File(pathname));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private InputStreamWriter(String path, String fileName) {
+		try {
+			File filePath = new File(path);
+			if (!filePath.isDirectory()) {
+				filePath.mkdir();
+			}
+			String pathname = path + "/" + fileName;
+			fos = new FileOutputStream(new File(pathname));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void write(InputStream inputStream) {
-		fileChannel = file.getChannel();
-		ByteBuffer byteBuffer = ByteBuffer.allocate(this.bufferSize);
-		byte[] bytes = new byte[this.bufferSize];
 		try {
-			while (inputStream.read(bytes) != -1) {
+			fileChannel = fos.getChannel();
+			ByteBuffer byteBuffer = ByteBuffer.allocate(this.bufferSize);
+			byte[] bytes = new byte[this.bufferSize];
+			fileChannel.force(true);
+			int off = -1;
+			while ((off = inputStream.read(bytes)) != -1) {
 				byteBuffer.clear();
-				byteBuffer.put(bytes);
+				byteBuffer.put(bytes, 0 , off);
 				byteBuffer.flip();
 				fileChannel.write(byteBuffer);
 			}
@@ -50,8 +69,8 @@ public class InputStreamWriter {
 			if (fileChannel != null) {
 				fileChannel.close();
 			}
-			if (file != null) {
-				file.close();
+			if (fos != null) {
+				fos.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

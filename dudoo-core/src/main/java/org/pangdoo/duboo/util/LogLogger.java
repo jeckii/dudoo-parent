@@ -7,13 +7,8 @@ public class LogLogger {
 	
 	private Logger logger;
 	
-	private static LogLogger instance;
-	
 	public static LogLogger getLogger(Class<?> clazz) {
-		if (instance == null) {
-			instance = new LogLogger(clazz);
-		}
-		return instance;
+		return new LogLogger(clazz);
 	}
 	
 	private LogLogger(Class<?> clazz) {
