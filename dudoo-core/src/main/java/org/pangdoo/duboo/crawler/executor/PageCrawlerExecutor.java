@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.http.HttpEntity;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
@@ -31,12 +32,19 @@ public class PageCrawlerExecutor {
 		executors = Executors.newFixedThreadPool(poolSize);
 	}
 	
-	public Object run(Configuration configuration, WebUrl webUrl, HttpUrlRequst urlRequst, PageParser parser) {
+	public Object run(Configuration configuration, HttpUrlRequst urlRequst, PageParser parser) {
 		Future<Object> future = executors.submit(new Callable<Object>() {
 
 			@Override
 			public Object call() {
-				urlRequst.setUrl(webUrl);
+				WebUrl webUrl = urlRequst.getUrl();
+				if (webUrl == null) {
+					try {
+						throw new NullException("URL is null.");
+					} catch (NullException e) {
+						logger.warn(e);
+					}
+				}
 				Fetcher fetcher = FetcherBuilder.custom()
 						.config(configuration)
 						.provider(urlRequst.getCredsProvider())

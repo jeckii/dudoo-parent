@@ -12,7 +12,7 @@ import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.LogLogger;
 import org.pangdoo.duboo.util.StringUtils;
-import org.pangdoo.duboo.exception.NullValueException;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.robots.RobotsCache;
 
 public final class DefaultUrlCollector implements UrlCollector {
@@ -125,7 +125,7 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 
 	@Override
-	public WebUrl consume() throws NullValueException {
+	public WebUrl consume() throws NullException {
 		if (this.remains == null) {
 			return null;
 		}
@@ -140,7 +140,7 @@ public final class DefaultUrlCollector implements UrlCollector {
 		try {
 			WebUrl next = this.nextUrl;
 			if (next == null) {
-				throw new NullValueException("Next URL is null");
+				throw new NullException("Next URL is null");
 			}
 			if (this.redirectUrls == null) {
 				this.redirectUrls = new HashMap<String, WebUrl>();
@@ -158,9 +158,9 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 	
 	@Override
-	public long size() throws NullValueException {
+	public long size() throws NullException {
 		if (this.urls == null) {
-			throw new NullValueException("List of URL is null.");
+			throw new NullException("List of URL is null.");
 		}
 		return this.urls.size();
 	}
@@ -169,8 +169,8 @@ public final class DefaultUrlCollector implements UrlCollector {
 	public boolean hasNext() {
 		if (this.remains == null) {
 			try {
-				throw new NullValueException("Remains is null.");
-			} catch (NullValueException e) {
+				throw new NullException("Remains is null.");
+			} catch (NullException e) {
 				logger.warn(e);
 			}
 		}
@@ -212,9 +212,9 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 	
 	@Override
-	public Set<WebUrl> rebuild() throws NullValueException {
+	public Set<WebUrl> rebuild() throws NullException {
 		if (this.urls == null) {
-			throw new NullValueException("Set of URL is null.");
+			throw new NullException("Set of URL is null.");
 		}
 		this.remains.addAll(this.urls);
 		return this.remains;

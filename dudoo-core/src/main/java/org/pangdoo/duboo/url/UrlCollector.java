@@ -3,7 +3,7 @@ package org.pangdoo.duboo.url;
 import java.util.Collection;
 import java.util.Set;
 
-import org.pangdoo.duboo.exception.NullValueException;
+import org.pangdoo.duboo.exception.NullException;
 
 /**
  * This interface represents an abstract collector for URL
@@ -26,9 +26,9 @@ public interface UrlCollector {
 	
 	/**
 	 * @return the size of the collector
-	 * @throws NullValueException
+	 * @throws NullException
 	 */
-	long size() throws NullValueException;
+	long size() throws NullException;
 	
 	/**
 	 * Returns {@code true} if the {@link WebUrl} collector has one can be used.
@@ -39,9 +39,9 @@ public interface UrlCollector {
 	
 	/**
 	 * @return a {@link WebUrl} for working
-	 * @throws NullValueException
+	 * @throws NullException
 	 */
-	WebUrl consume() throws NullValueException;
+	WebUrl consume() throws NullException;
 	
 	/**
 	 * Making the redirect {@link WebUrl} 
@@ -66,21 +66,21 @@ public interface UrlCollector {
 	boolean remove(WebUrl url);
 	
 	/**
-	 * This method is for removing the {@link WebUrl} that conforms to this
-	 * path,and this {@link WebUrl} belongs to the location.
+	 * This method is for removing {@link WebUrl} that meet certain
+	 * criteria and belong to this location.
 	 * 
-	 * @param location The {@link WebUrl} to be removed belongs to this location
+	 * @param location
 	 * @return
 	 */
 	int filter(String location);
 	
 	/**
-	 * Put all of {@link WebUrl} in the job queue.
+	 * Put all {@link WebUrl} back into the job queue.
 	 * 
 	 * @return a {@link WebUrl} set
-	 * @throws NullValueException
+	 * @throws NullException
 	 */
-	Set<WebUrl> rebuild() throws NullValueException;
+	Set<WebUrl> rebuild() throws NullException;
 	
 	/**
 	 * Clear all {@link WebUrl} of the collector.

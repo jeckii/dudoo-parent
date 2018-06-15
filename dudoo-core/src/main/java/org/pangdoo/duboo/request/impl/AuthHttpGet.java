@@ -10,7 +10,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.pangdoo.duboo.exception.NullValueException;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.url.Url;
 import org.pangdoo.duboo.url.WebUrl;
@@ -19,6 +19,10 @@ public class AuthHttpGet extends HttpUrlRequst {
 	
 	public AuthHttpGet(String username, String password) {
 		this(null, null, username, password, null);
+	}
+	
+	public AuthHttpGet(String username, String password, WebUrl webUrl) {
+		this(null, null, username, password, webUrl);
 	}
 
 	public AuthHttpGet(String host, Integer port, String username, String password) {
@@ -35,11 +39,11 @@ public class AuthHttpGet extends HttpUrlRequst {
 	@Override
 	public HttpUriRequest request() throws Exception {
 		if (this.webUrl == null) {
-			throw new NullValueException("URL is null.");
+			throw new NullException("URL is null.");
 		}
 		Url url = this.webUrl.getUrl();
 		if (url == null) {
-			throw new NullValueException("URL is null.");
+			throw new NullException("URL is null.");
 		}
 		RequestBuilder requestBuilder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();

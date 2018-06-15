@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
-import org.pangdoo.duboo.exception.NullValueException;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
@@ -38,7 +38,7 @@ public class RobotsTxtFecher {
 	public void fetch(String location) {
 		try {
 			if (location == null) {
-				throw new NullValueException("The location is null.");
+				throw new NullException("The location is null.");
 			}
 			if (RobotsCache.hasLocation(location)) {
 				return;

@@ -1,14 +1,14 @@
 package org.pangdoo.duboo.exception;
 
-public class NullValueException extends Exception {
+public class NullException extends Exception {
 
 	private static final long serialVersionUID = 4458347043290720360L;
 	
-	public NullValueException() {
+	public NullException() {
 		super();
 	}
 	
-	public NullValueException(String s) {
+	public NullException(String s) {
 		super(s);
 	}
 

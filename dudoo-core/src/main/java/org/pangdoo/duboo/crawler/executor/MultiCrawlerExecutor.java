@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.http.HttpEntity;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
@@ -11,9 +12,11 @@ import org.pangdoo.duboo.handler.MultiLoader;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
-import org.pangdoo.duboo.util.StringUtils;
+import org.pangdoo.duboo.util.LogLogger;
 
 public class MultiCrawlerExecutor {
+	
+	private LogLogger logger = LogLogger.getLogger(MultiCrawlerExecutor.class);
 	
 	private ExecutorService executors;
 	
@@ -27,39 +30,32 @@ public class MultiCrawlerExecutor {
 		executors = Executors.newFixedThreadPool(poolSize);
 	}
 	
-	public void run(Configuration configuration, WebUrl webUrl, HttpUrlRequst urlRequst, MultiLoader multiLoader) {
+	public void run(Configuration configuration, HttpUrlRequst urlRequst, MultiLoader multiLoader) {
 		executors.submit(new Runnable() {
 
 			@Override
 			public void run() {
-				String url = webUrl.getUrl().toString();
-				urlRequst.setUrl(webUrl);
+				WebUrl webUrl = urlRequst.getUrl();
+				if (webUrl == null) {
+					try {
+						throw new NullException("URL is null.");
+					} catch (NullException e) {
+						logger.warn(e);
+					}
+				}
 				Fetcher fetcher = FetcherBuilder.custom()
 						.config(configuration)
 						.provider(urlRequst.getCredsProvider())
 						.build();
 				HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 				if (entity != null) {
-					multiLoader.load(entity, getMultiName(url));
+					multiLoader.load(entity, UrlResolver.multiName(webUrl.getUrl().toString()));
 				}
 				if (fetcher != null) {
 					fetcher.shutdown();
 				}
 			}
 		});
-	}
-	
-	private String getMultiName(String url) {
-		String path = UrlResolver.parser(url).getPath();
-		if (!StringUtils.isBlank(path)) {
-			int sepIndex = path.lastIndexOf("/");
-			if (sepIndex == -1) {
-				return path;
-			} else {
-				return path.substring(sepIndex + 1);
-			}
-		}
-		return null;
 	}
 	
 	public void shutdown() {

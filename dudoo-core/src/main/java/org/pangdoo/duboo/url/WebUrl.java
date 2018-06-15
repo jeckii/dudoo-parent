@@ -1,6 +1,6 @@
 package org.pangdoo.duboo.url;
 
-import org.pangdoo.duboo.exception.NullValueException;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.util.StringUtils;
 
 public class WebUrl {
@@ -61,7 +61,7 @@ public class WebUrl {
 	
 	private String extractDomain(String location) throws Exception {
 		if (StringUtils.isEmpty(location)) {
-			throw new NullValueException("Location is null.");
+			throw new NullException("Location is null.");
 		}
 		String[] s = location.split("\\.");
 		int len = s.length;

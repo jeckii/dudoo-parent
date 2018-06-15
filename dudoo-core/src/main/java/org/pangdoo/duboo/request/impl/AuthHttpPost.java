@@ -11,19 +11,34 @@ import org.pangdoo.duboo.url.WebUrl;
 
 public class AuthHttpPost extends BasicHttpPost {
 	
-	public AuthHttpPost(HttpEntity entity, Map<String, String> params,
-			String username, String password) {
-		this(entity, null, params, null, null, username, password);
+	public AuthHttpPost(String username, String password,
+			Map<String, String> params) {
+		this(null, null, username, password, null, params);
+	}
+	
+	public AuthHttpPost(String username, String password,
+			Map<String, String> params, WebUrl webUrl) {
+		this(null, null, username, password, null, params, webUrl);
+	}
+	
+	public AuthHttpPost(String username, String password,
+			HttpEntity entity, Map<String, String> params) {
+		this(null, null, username, password, entity, params);
+	}
+	
+	public AuthHttpPost(String username, String password,
+			HttpEntity entity, Map<String, String> params, WebUrl webUrl) {
+		this(null, null, username, password, entity, params, webUrl);
 	}
 
-	public AuthHttpPost(HttpEntity entity, Map<String, String> params, String host,
-			Integer port, String username, String password) {
-		this(entity, null, params, host, port, username, password);
+	public AuthHttpPost(String host, Integer port, String username, String password,
+			HttpEntity entity, Map<String, String> params) {
+		this(host, port, username, password, entity, params, null);
 	}
 
-	public AuthHttpPost(HttpEntity entity, WebUrl webUrl, Map<String, String> params,
-			String host, Integer port, String username, String password) {
-		super(entity, webUrl, params);
+	public AuthHttpPost(String host, Integer port, String username, String password,
+			HttpEntity entity, Map<String, String> params, WebUrl webUrl) {
+		super(entity, params, webUrl);
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(host, port),
 				new UsernamePasswordCredentials(username, password));

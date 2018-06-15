@@ -71,4 +71,17 @@ public final class UrlResolver {
 		return path.replaceAll("\\*", "\\\\w+") + "\\S+";
 	}
 	
+	public static String multiName(String url) {
+		String path = parser(url).getPath();
+		if (!StringUtils.isBlank(path)) {
+			int sepIndex = path.lastIndexOf("/");
+			if (sepIndex == -1) {
+				return path;
+			} else {
+				return path.substring(sepIndex + 1);
+			}
+		}
+		return null;
+	}
+	
 }

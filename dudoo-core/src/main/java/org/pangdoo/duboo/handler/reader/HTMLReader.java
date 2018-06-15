@@ -8,7 +8,7 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
-import org.pangdoo.duboo.exception.FileReaderException;
+import org.pangdoo.duboo.exception.ReaderException;
 import org.pangdoo.duboo.util.LogLogger;
 import org.pangdoo.duboo.util.StringUtils;
 
@@ -35,9 +35,9 @@ public class HTMLReader {
 	private HTMLReader(InputStream input, String charsetName, String baseUri) {
 		try {
 			if (input == null) {
-				throw new FileReaderException("Input is null.");
+				throw new ReaderException("Input is null.");
 			}
-		} catch (FileReaderException e) {
+		} catch (ReaderException e) {
 			logger.warn(e);
 		}
 		try {
@@ -50,9 +50,9 @@ public class HTMLReader {
 	private HTMLReader(String html, String charsetName) {
 		try {
 			if (StringUtils.isEmpty(html)) {
-				throw new FileReaderException("Html is null.");
+				throw new ReaderException("Html is null.");
 			}
-		} catch (FileReaderException e) {
+		} catch (ReaderException e) {
 			logger.warn(e);
 		}
 		doc = Jsoup.parse(html, charsetName);
@@ -64,9 +64,9 @@ public class HTMLReader {
 				doc = Jsoup.parseBodyFragment(bodyHtml, charsetName);
 			} else {
 				// The Document has been created
-				throw new FileReaderException("Document has been created.");
+				throw new ReaderException("Document has been created.");
 			}
-		} catch (FileReaderException e) {
+		} catch (ReaderException e) {
 			logger.warn(e);
 		}
 	}

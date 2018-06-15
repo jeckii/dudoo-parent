@@ -13,7 +13,6 @@ import org.pangdoo.duboo.robots.RobotsTxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
-import org.pangdoo.duboo.util.StringUtils;
 
 public class MultiCrawler {
 	
@@ -47,7 +46,7 @@ public class MultiCrawler {
 			urlRequst.setUrl(webUrl);
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 			if (entity != null) {
-				multiLoader.load(entity, getMultiName(webUrl.getUrl().toString()));
+				multiLoader.load(entity, UrlResolver.multiName(webUrl.getUrl().toString()));
 			}
 			Thread.sleep(configuration.getDelay());
 		}
@@ -56,17 +55,4 @@ public class MultiCrawler {
 		}
 	}
 	
-	private String getMultiName(String url) {
-		String path = UrlResolver.parser(url).getPath();
-		if (!StringUtils.isBlank(path)) {
-			int sepIndex = path.lastIndexOf("/");
-			if (sepIndex == -1) {
-				return path;
-			} else {
-				return path.substring(sepIndex + 1);
-			}
-		}
-		return null;
-	}
-
 }
