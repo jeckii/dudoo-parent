@@ -6,7 +6,7 @@ import java.util.Map;
 public class RobotsCache {
 	
 	private static final Map<String, Robot> cache = new HashMap<String, Robot>();
-
+	
 	public static Robot get(String location) {;
 		return cache.get(location);
 	}

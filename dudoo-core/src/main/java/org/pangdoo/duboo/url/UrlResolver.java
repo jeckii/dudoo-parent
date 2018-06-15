@@ -61,4 +61,14 @@ public final class UrlResolver {
 		return url;
 	}
 	
+	public static String pathPattern(String path) {
+		if (path.indexOf("*") == -1) {
+			return path + "\\S+";
+		}
+		if (path.endsWith("$")) {
+			return path.replaceAll("\\*", "\\\\S+");
+		}
+		return path.replaceAll("\\*", "\\\\w+") + "\\S+";
+	}
+	
 }

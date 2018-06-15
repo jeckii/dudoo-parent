@@ -6,7 +6,11 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class InputStreamWriter {
+import org.pangdoo.duboo.util.LogLogger;
+
+public class OutputStreamWriter {
+	
+	private LogLogger logger = LogLogger.getLogger(OutputStreamWriter.class);
 	
 	private FileOutputStream fos;
 	private FileChannel fileChannel;
@@ -17,23 +21,23 @@ public class InputStreamWriter {
 		this.bufferSize = bufferSize;
 	}
 
-	public static InputStreamWriter newInstance(String pathname) {
-		return new InputStreamWriter(pathname);
+	public static OutputStreamWriter newInstance(String pathname) {
+		return new OutputStreamWriter(pathname);
 	}
 	
-	public static InputStreamWriter newInstance(String path, String fileName) {
-		return new InputStreamWriter(path, fileName);
+	public static OutputStreamWriter newInstance(String path, String fileName) {
+		return new OutputStreamWriter(path, fileName);
 	}
 	
-	private InputStreamWriter(String pathname) {
+	private OutputStreamWriter(String pathname) {
 		try {
 			fos = new FileOutputStream(new File(pathname));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 	}
 	
-	private InputStreamWriter(String path, String fileName) {
+	private OutputStreamWriter(String path, String fileName) {
 		try {
 			File filePath = new File(path);
 			if (!filePath.isDirectory()) {
@@ -42,7 +46,7 @@ public class InputStreamWriter {
 			String pathname = path + "/" + fileName;
 			fos = new FileOutputStream(new File(pathname));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 	}
 	
@@ -60,7 +64,7 @@ public class InputStreamWriter {
 				fileChannel.write(byteBuffer);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 	}
 	
@@ -73,7 +77,7 @@ public class InputStreamWriter {
 				fos.close();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 	}
 

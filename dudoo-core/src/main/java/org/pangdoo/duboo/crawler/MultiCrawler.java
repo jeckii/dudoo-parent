@@ -1,6 +1,5 @@
 package org.pangdoo.duboo.crawler;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.http.HttpEntity;
@@ -37,10 +36,7 @@ public class MultiCrawler {
 			if (!RobotsCache.hasLocation(location)) {
 				robotsTxtFecher.fetch(location);
 			}
-			List<String> disallows = RobotsCache.get(location).getDisallow();
-			for (String disallow : disallows) {
-				collector.filter(location, disallow);
-			}
+			collector.filter(location);
 		}
 		Fetcher fetcher = FetcherBuilder.custom()
 				.config(configuration)
@@ -48,11 +44,10 @@ public class MultiCrawler {
 				.build();
 		while (collector.hasNext()) {
 			WebUrl webUrl = collector.consume();
-			String url = webUrl.getUrl().toString();
-			urlRequst.setUrl(url);
+			urlRequst.setUrl(webUrl);
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 			if (entity != null) {
-				multiLoader.load(entity, getMultiName(url));
+				multiLoader.load(entity, getMultiName(webUrl.getUrl().toString()));
 			}
 			Thread.sleep(configuration.getDelay());
 		}

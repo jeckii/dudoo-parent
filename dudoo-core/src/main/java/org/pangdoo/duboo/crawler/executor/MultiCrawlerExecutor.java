@@ -33,7 +33,7 @@ public class MultiCrawlerExecutor {
 			@Override
 			public void run() {
 				String url = webUrl.getUrl().toString();
-				urlRequst.setUrl(url);
+				urlRequst.setUrl(webUrl);
 				Fetcher fetcher = FetcherBuilder.custom()
 						.config(configuration)
 						.provider(urlRequst.getCredsProvider())

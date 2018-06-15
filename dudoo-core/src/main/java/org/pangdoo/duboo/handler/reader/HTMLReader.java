@@ -9,24 +9,51 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.pangdoo.duboo.exception.FileReaderException;
+import org.pangdoo.duboo.util.LogLogger;
 import org.pangdoo.duboo.util.StringUtils;
 
 public class HTMLReader {
 	
-	private Document doc;
+	private LogLogger logger = LogLogger.getLogger(HTMLReader.class);
 	
-	public HTMLReader() {}
-	
-	public HTMLReader(InputStream input, String charsetName, String baseUri) throws FileReaderException, IOException {
-		if (input == null) {
-			throw new FileReaderException("Input is null.");
-		}
-		doc = Jsoup.parse(input, charsetName, baseUri);
+	public static HTMLReader newInstance() {
+		return new HTMLReader();
 	}
 	
-	public HTMLReader(String html, String charsetName) throws FileReaderException {
-		if (StringUtils.isEmpty(html)) {
-			throw new FileReaderException("Html is null.");
+	public static HTMLReader newInstance(InputStream input, String charsetName, String baseUri) {
+		return new HTMLReader(input, charsetName, baseUri);
+	}
+	
+	public static HTMLReader newInstance(String html, String charsetName) {
+		return new HTMLReader(html, charsetName);
+	}
+	
+	private Document doc;
+	
+	private HTMLReader() {}
+	
+	private HTMLReader(InputStream input, String charsetName, String baseUri) {
+		try {
+			if (input == null) {
+				throw new FileReaderException("Input is null.");
+			}
+		} catch (FileReaderException e) {
+			logger.warn(e);
+		}
+		try {
+			doc = Jsoup.parse(input, charsetName, baseUri);
+		} catch (IOException e) {
+			logger.warn(e);
+		}
+	}
+	
+	private HTMLReader(String html, String charsetName) {
+		try {
+			if (StringUtils.isEmpty(html)) {
+				throw new FileReaderException("Html is null.");
+			}
+		} catch (FileReaderException e) {
+			logger.warn(e);
 		}
 		doc = Jsoup.parse(html, charsetName);
 	}
@@ -40,7 +67,7 @@ public class HTMLReader {
 				throw new FileReaderException("Document has been created.");
 			}
 		} catch (FileReaderException e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 	}
 	

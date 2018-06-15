@@ -70,10 +70,9 @@ public interface UrlCollector {
 	 * path,and this {@link WebUrl} belongs to the location.
 	 * 
 	 * @param location The {@link WebUrl} to be removed belongs to this location
-	 * @param path
 	 * @return
 	 */
-	int filter(String location, String path);
+	int filter(String location);
 	
 	/**
 	 * Put all of {@link WebUrl} in the job queue.

@@ -11,6 +11,7 @@ import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.fetcher.HttpResponse;
 import org.pangdoo.duboo.request.impl.BasicHttpGet;
+import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.LogLogger;
 
 public class RobotsTxtFecher {
@@ -42,11 +43,12 @@ public class RobotsTxtFecher {
 			if (RobotsCache.hasLocation(location)) {
 				return;
 			}
-	    	HttpResponse response = fetcher.fetch(new BasicHttpGet(location + ROBOTS_TXT_PATH));
+			WebUrl webUrl = new WebUrl(location + ROBOTS_TXT_PATH);
+	    	HttpResponse response = fetcher.fetch(new BasicHttpGet(webUrl));
 	    	if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == 200) {
 	    		HttpEntity entity = response.getEntity();
 	    		if (entity != null) {
-	    			RobotsTxtParser reader = new RobotsTxtParser(entity.getContent(), "UTF-8");
+	    			RobotsTxtParser reader = new RobotsTxtParser(entity.getContent(), config.getCharset());
 		        	items = reader.items(config.getUserAgent());
 		        	Robot robot = new Robot();
 		        	robot.setAllow(allow());
@@ -61,14 +63,22 @@ public class RobotsTxtFecher {
 	
 	private List<String> allow() {
 		if (items != null) {
-			return items.get(ALLOW_ITEM);
+			List<String> allow = items.get(ALLOW_ITEM);
+			if (allow == null) {
+				return new ArrayList<String>(0);
+			}
+			return allow;
 		}
 		return new ArrayList<String>(0);
 	}
 	
 	private List<String> disallow() {
 		if (items != null) {
-			return items.get(DISALLOW_ITEM);
+			List<String> disallow = items.get(DISALLOW_ITEM);
+			if (disallow == null) {
+				return new ArrayList<String>(0);
+			}
+			return disallow;
 		}
 		return new ArrayList<String>(0);
 	}

@@ -36,7 +36,7 @@ public class PageCrawlerExecutor {
 
 			@Override
 			public Object call() {
-				urlRequst.setUrl(webUrl.getUrl().toString());
+				urlRequst.setUrl(webUrl);
 				Fetcher fetcher = FetcherBuilder.custom()
 						.config(configuration)
 						.provider(urlRequst.getCredsProvider())
@@ -49,21 +49,19 @@ public class PageCrawlerExecutor {
 				try {
 					return parser.parse(entity, webUrl.getUrl().baseUrl());
 				} catch (Exception e) {
-					e.printStackTrace();
-					return null;
+					logger.warn(e);
 				} finally {
 					if (fetcher != null) {
 						fetcher.shutdown();
 					}
 				}
-				
+				return null;
 			}
-			
 		});
 		try {
 			return future.get();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 		return null;
 	}

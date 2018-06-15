@@ -3,14 +3,17 @@ package org.pangdoo.duboo.url.collector;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.pangdoo.duboo.url.UrlCollector;
+import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.LogLogger;
 import org.pangdoo.duboo.util.StringUtils;
 import org.pangdoo.duboo.exception.NullValueException;
+import org.pangdoo.duboo.robots.RobotsCache;
 
 public final class DefaultUrlCollector implements UrlCollector {
 	
@@ -189,32 +192,25 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 	
 	@Override
-	public int filter(String location, String path) {
+	public int filter(String location) {
 		if (StringUtils.isBlank(location)) {
 			throw new IllegalArgumentException("the domain is null.");
 		}
 		int count = 0;
-		for (WebUrl url : urls) {
-			if (location.equals(url.getUrl().getLocation()) 
-					&& StringUtils.pattern(url.getUrl().getPath(), buildPattern(path))) {
-				if(urls.remove(url)) {
-					count ++;
+		List<String> disallows = RobotsCache.get(location).getDisallow();
+		for (String disallow : disallows) {
+			for (WebUrl url : urls) {
+				if (location.equals(url.getUrl().getLocation()) 
+						&& StringUtils.pattern(url.getUrl().getPath(), UrlResolver.pathPattern(disallow))) {
+					if(urls.remove(url)) {
+						count ++;
+					}
 				}
 			}
 		}
 		return count;
 	}
 	
-	private String buildPattern(String path) {
-		if (path.indexOf("*") == -1) {
-			return path + "\\S+";
-		}
-		if (path.endsWith("$")) {
-			return path.replaceAll("\\*", "\\\\S+");
-		}
-		return path.replaceAll("\\*", "\\\\w+") + "\\S+";
-	}
-
 	@Override
 	public Set<WebUrl> rebuild() throws NullValueException {
 		if (this.urls == null) {

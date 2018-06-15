@@ -1,5 +1,6 @@
 package org.pangdoo.duboo.request.impl;
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -7,7 +8,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.request.HttpUrlRequst;
-import org.pangdoo.duboo.util.StringUtils;
+import org.pangdoo.duboo.url.Url;
+import org.pangdoo.duboo.url.WebUrl;
 
 public class BasicHttpGet extends HttpUrlRequst {
 
@@ -15,16 +17,20 @@ public class BasicHttpGet extends HttpUrlRequst {
 		super();
 	}
 
-	public BasicHttpGet(String url) {
-		super(url);
+	public BasicHttpGet(WebUrl webUrl) {
+		super(webUrl);
 	}
 
 	@Override
 	public HttpUriRequest request() throws Exception {
-		if (StringUtils.isEmpty(this.url)) {
+		if (this.webUrl == null) {
 			throw new NullValueException("URL is null.");
 		}
-		RequestBuilder requestBuilder = RequestBuilder.get(this.url);
+		Url url = this.webUrl.getUrl();
+		if (url == null) {
+			throw new NullValueException("URL is null.");
+		}
+		RequestBuilder requestBuilder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();
 		if (header != null && !header.isEmpty()) {
 			Iterator<String> headerIterator = header.keySet()
@@ -34,6 +40,7 @@ public class BasicHttpGet extends HttpUrlRequst {
 				requestBuilder.addHeader(name, header.get(name));
 			}
 		}
+		requestBuilder.setCharset(Charset.forName(getCharset()));
 		return requestBuilder.build();
 	}
 

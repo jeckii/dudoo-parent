@@ -4,6 +4,6 @@ import org.apache.http.HttpEntity;
 
 public interface MultiLoader {
 	
-	void load(HttpEntity entity, String name);
+	void load(HttpEntity entity, String fileName);
 
 }

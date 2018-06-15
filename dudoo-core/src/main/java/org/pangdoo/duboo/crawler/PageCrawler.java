@@ -10,7 +10,6 @@ import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.PageParser;
 import org.pangdoo.duboo.request.HttpUrlRequst;
-import org.pangdoo.duboo.robots.Robot;
 import org.pangdoo.duboo.robots.RobotsCache;
 import org.pangdoo.duboo.robots.RobotsTxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
@@ -37,13 +36,7 @@ public class PageCrawler {
 			if (!RobotsCache.hasLocation(location)) {
 				robotsTxtFecher.fetch(location);
 			}
-			Robot robot = RobotsCache.get(location);
-			if (robot != null) {
-				List<String> disallows = robot.getDisallow();
-				for (String disallow : disallows) {
-					collector.filter(location, disallow);
-				}
-			}
+			collector.filter(location);
 		}
 		long size = collector.size();
 		if (size == 0L) {
@@ -56,7 +49,7 @@ public class PageCrawler {
 				.build();
 		while (collector.hasNext()) {
 			WebUrl webUrl = collector.consume();
-			urlRequst.setUrl(webUrl.getUrl().toString());
+			urlRequst.setUrl(webUrl);
 			HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
 			if (entity != null) {
 				dataList.add(parser.parse(entity, webUrl.getUrl().baseUrl()));

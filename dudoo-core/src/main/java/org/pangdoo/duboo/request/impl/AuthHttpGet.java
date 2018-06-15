@@ -1,5 +1,6 @@
 package org.pangdoo.duboo.request.impl;
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -11,7 +12,8 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.pangdoo.duboo.exception.NullValueException;
 import org.pangdoo.duboo.request.HttpUrlRequst;
-import org.pangdoo.duboo.util.StringUtils;
+import org.pangdoo.duboo.url.Url;
+import org.pangdoo.duboo.url.WebUrl;
 
 public class AuthHttpGet extends HttpUrlRequst {
 	
@@ -23,8 +25,8 @@ public class AuthHttpGet extends HttpUrlRequst {
 		this(host, port, username, password, null);
 	}
 
-	public AuthHttpGet(String host, Integer port, String username, String password, String url) {
-		super(url);
+	public AuthHttpGet(String host, Integer port, String username, String password, WebUrl webUrl) {
+		super(webUrl);
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(host, port), new UsernamePasswordCredentials(username, password));
 		setCredsProvider(credsProvider);
@@ -32,10 +34,14 @@ public class AuthHttpGet extends HttpUrlRequst {
 
 	@Override
 	public HttpUriRequest request() throws Exception {
-		if (StringUtils.isEmpty(this.url)) {
+		if (this.webUrl == null) {
 			throw new NullValueException("URL is null.");
 		}
-		RequestBuilder requestBuilder = RequestBuilder.get(this.url);
+		Url url = this.webUrl.getUrl();
+		if (url == null) {
+			throw new NullValueException("URL is null.");
+		}
+		RequestBuilder requestBuilder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();
 		if (header != null && !header.isEmpty()) {
 			Iterator<String> headerIterator = header.keySet()
@@ -45,6 +51,7 @@ public class AuthHttpGet extends HttpUrlRequst {
 				requestBuilder.addHeader(name, header.get(name));
 			}
 		}
+		requestBuilder.setCharset(Charset.forName(getCharset()));
 		return requestBuilder.build();
 	}
 
