@@ -1,7 +1,8 @@
 package org.pangdoo.duboo.crawler.executor;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.exception.NullException;
@@ -18,7 +19,7 @@ public class MultiCrawlerExecutor {
 	
 	private LogLogger logger = LogLogger.getLogger(MultiCrawlerExecutor.class);
 	
-	private ExecutorService executors;
+	private ScheduledExecutorService executors;
 	
 	private static final int DEFAULT_POOL_SIZE = 3;
 	
@@ -27,11 +28,11 @@ public class MultiCrawlerExecutor {
 	}
 	
 	public MultiCrawlerExecutor(int poolSize) {
-		executors = Executors.newFixedThreadPool(poolSize);
+		executors = Executors.newScheduledThreadPool(DEFAULT_POOL_SIZE);
 	}
 	
 	public void run(Configuration configuration, HttpUrlRequst urlRequst, MultiLoader multiLoader) {
-		executors.submit(new Runnable() {
+		executors.schedule(new Runnable() {
 
 			@Override
 			public void run() {
@@ -55,7 +56,7 @@ public class MultiCrawlerExecutor {
 					fetcher.shutdown();
 				}
 			}
-		});
+		}, configuration.getDelay(), TimeUnit.MILLISECONDS);
 	}
 	
 	public void shutdown() {

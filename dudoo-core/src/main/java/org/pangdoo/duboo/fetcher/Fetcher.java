@@ -122,7 +122,7 @@ public class Fetcher {
 	                }
 			}
     	} catch(Exception e) {
-    		logger.warn("Error URI : " + urlRequst.getUrl(), e);
+    		logger.warn("Error URI : " + urlRequst.getUrl().getUrl(), e);
 		}
     	return httpResponse;
     }

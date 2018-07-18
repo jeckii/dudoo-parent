@@ -1,9 +1,10 @@
 package org.pangdoo.duboo.crawler.executor;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.pangdoo.duboo.exception.NullException;
@@ -20,7 +21,7 @@ public class PageCrawlerExecutor {
 	
 	private LogLogger logger = LogLogger.getLogger(PageCrawlerExecutor.class);
 	
-	private ExecutorService executors;
+	private ScheduledExecutorService executors;
 	
 	private static final int DEFAULT_POOL_SIZE = 3;
 	
@@ -29,11 +30,11 @@ public class PageCrawlerExecutor {
 	}
 	
 	public PageCrawlerExecutor(int poolSize) {
-		executors = Executors.newFixedThreadPool(poolSize);
+		executors = Executors.newScheduledThreadPool(poolSize);
 	}
 	
 	public Object run(Configuration configuration, HttpUrlRequst urlRequst, PageParser parser) {
-		Future<Object> future = executors.submit(new Callable<Object>() {
+		Future<Object> future = executors.schedule(new Callable<Object>() {
 
 			@Override
 			public Object call() {
@@ -65,7 +66,7 @@ public class PageCrawlerExecutor {
 				}
 				return null;
 			}
-		});
+		}, configuration.getDelay(), TimeUnit.MILLISECONDS);
 		try {
 			return future.get();
 		} catch (Exception e) {
