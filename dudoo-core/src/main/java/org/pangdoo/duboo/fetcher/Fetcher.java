@@ -7,10 +7,12 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.RegistryBuilder;
@@ -45,8 +47,8 @@ public class Fetcher {
     protected CredentialsProvider credsProvider;
     
     public Fetcher config(Configuration config) {
-    	if (this.config != null) {
-    		
+    	if (config == null) {
+    		throw new IllegalArgumentException("Configuration is null.");
     	}
     	this.config = config;
     	return this;
@@ -58,14 +60,17 @@ public class Fetcher {
     }
     
     public Fetcher build() {
-    	 RequestConfig requestConfig = RequestConfig.custom()
+    	 Builder builder = RequestConfig.custom()
                  .setExpectContinueEnabled(false)
                  .setCookieSpec(config.getCookieSpec())
                  .setRedirectsEnabled(false)
                  .setConnectionRequestTimeout(config.getConnectionRequestTimeout())
                  .setSocketTimeout(config.getSocketTimeout())
-                 .setConnectTimeout(config.getConnectTimeout())
-                 .build();
+                 .setConnectTimeout(config.getConnectTimeout());
+    	 if (config.getProxyHost() != null) {
+    		 builder = builder.setProxy(new HttpHost(config.getProxyHost(), config.getProxyPort()));
+    	 }
+    	 RequestConfig requestConfig = builder.build();
     	 RegistryBuilder<ConnectionSocketFactory> connRegistryBuilder = RegistryBuilder.create();
     	 connRegistryBuilder.register("http", PlainConnectionSocketFactory.INSTANCE);
     	 try {

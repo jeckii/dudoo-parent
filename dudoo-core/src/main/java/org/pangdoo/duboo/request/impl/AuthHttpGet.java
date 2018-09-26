@@ -45,18 +45,18 @@ public class AuthHttpGet extends HttpUrlRequst {
 		if (url == null) {
 			throw new NullException("URL is null.");
 		}
-		RequestBuilder requestBuilder = RequestBuilder.get(url.toString());
+		RequestBuilder builder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();
 		if (header != null && !header.isEmpty()) {
 			Iterator<String> headerIterator = header.keySet()
 					.iterator();
 			while (headerIterator.hasNext()) {
 				String name = headerIterator.next();
-				requestBuilder.addHeader(name, header.get(name));
+				builder.addHeader(name, header.get(name));
 			}
 		}
-		requestBuilder.setCharset(Charset.forName(getCharset()));
-		return requestBuilder.build();
+		builder.setCharset(Charset.forName(getCharset()));
+		return builder.build();
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.pangdoo.duboo.exception.ReaderException;
 import org.pangdoo.duboo.util.LogLogger;
@@ -100,7 +101,7 @@ public class HTMLReader {
 		return list;
 	}
 	
-	public List<Node> segmentsNode(Node node, String nodeName) {
+	public List<Node> segmentNodes(Node node, String nodeName) {
 		List<Node> nodes = node.childNodes();
 		List<Node> list = new ArrayList<Node>(nodes.size());
 		for (Node n : nodes) {
@@ -109,6 +110,26 @@ public class HTMLReader {
 			}
 		}
 		return list;
+	}
+	
+	public List<Node> segmentAllNodes(Node node, String nodeName) {
+		List<Node> nodes = new ArrayList<Node>();
+		segmentAllNodes(node, nodeName, nodes);
+		return nodes; 
+	}
+	
+	private void segmentAllNodes(Node node, String nodeName, List<Node> nodes) {
+		if (node.childNodeSize() > 0) {
+			List<Node> childNodes = node.childNodes();
+			for (Node childNode : childNodes) {
+				if (nodeName.equalsIgnoreCase(childNode.nodeName())) {
+					nodes.add(childNode);
+				}
+				if (childNode.childNodeSize() > 0) {
+					segmentAllNodes(childNode, nodeName, nodes);
+				}
+			}
+		}
 	}
 	
 	public List<String> segments(Node node, String nodeName) {
@@ -128,4 +149,15 @@ public class HTMLReader {
 		return list;
 	}
 	
+	public void clearBody() {
+		Element body = doc.body();
+		Element html = body.parent();
+		body.remove();
+		html.append("<body></body>");		
+	}
+	
+	public void append(String html) {
+		doc.body().append(html);
+	}
+
 }

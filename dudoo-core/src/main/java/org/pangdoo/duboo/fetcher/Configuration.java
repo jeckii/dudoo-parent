@@ -21,9 +21,13 @@ public class Configuration {
     
     private CookieStore cookieStore;
     
-    private String proxyHost;
+    private String proxyHost = null;
     
-    private int proxyPort;
+    private int proxyPort = 80;
+    
+    private String proxyUsername = null;
+
+    private String proxyPassword = null;
     
     private String userAgent = "dudoo";
     
@@ -109,6 +113,22 @@ public class Configuration {
 
 	public void setProxyPort(int proxyPort) {
 		this.proxyPort = proxyPort;
+	}
+
+	public String getProxyUsername() {
+		return proxyUsername;
+	}
+
+	public void setProxyUsername(String proxyUsername) {
+		this.proxyUsername = proxyUsername;
+	}
+
+	public String getProxyPassword() {
+		return proxyPassword;
+	}
+
+	public void setProxyPassword(String proxyPassword) {
+		this.proxyPassword = proxyPassword;
 	}
 
 	public String getUserAgent() {

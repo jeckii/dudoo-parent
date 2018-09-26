@@ -9,9 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pangdoo.duboo.util.LogLogger;
 import org.pangdoo.duboo.util.StringUtils;
 
 public class RobotsTxtParser {
+	
+	private final LogLogger logger = LogLogger.getLogger(RobotsTxtParser.class);
 	
 	private byte[] bytes;
 	private String charsetName;
@@ -34,9 +37,12 @@ public class RobotsTxtParser {
 	
 	public String getContent() {
 		try {
+			if (this.bytes == null) {
+				return null;
+			}
 			return new String(this.bytes, this.charsetName);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.warn(e);
 		}
 		return null;
 	}

@@ -44,29 +44,29 @@ public class BasicHttpPost extends HttpUrlRequst {
 		if (url == null) {
 			throw new NullException("URL is null.");
 		}
-		RequestBuilder requestBuilder = RequestBuilder.post(url.toString());
+		RequestBuilder builder = RequestBuilder.post(url.toString());
 		Map<String, String> header = getHeaders();
 		if (header != null && !header.isEmpty()) {
 			Iterator<String> headerIterator = header.keySet()
 					.iterator();
 			while (headerIterator.hasNext()) {
 				String name = headerIterator.next();
-				requestBuilder.addHeader(name, header.get(name));
+				builder.addHeader(name, header.get(name));
 			}
 		}
 		if (entity != null) {
-			requestBuilder.setEntity(entity);
+			builder.setEntity(entity);
 		}
 		if (params != null && !params.isEmpty()) {
 			Iterator<String> paramsIterator = params.keySet()
 					.iterator();
 			while (paramsIterator.hasNext()) {
 				String name = paramsIterator.next();
-				requestBuilder.addParameter(name, params.get(name));
+				builder.addParameter(name, params.get(name));
 			}
 		}
-		requestBuilder.setCharset(Charset.forName(getCharset()));
-		return requestBuilder.build();
+		builder.setCharset(Charset.forName(getCharset()));
+		return builder.build();
 	}
 
 }
