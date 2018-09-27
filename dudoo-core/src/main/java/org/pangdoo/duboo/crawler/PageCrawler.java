@@ -11,7 +11,7 @@ import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.PageParser;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.robots.RobotsCache;
-import org.pangdoo.duboo.robots.RobotsTxtFecher;
+import org.pangdoo.duboo.robots.RobotstxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
 import org.pangdoo.duboo.url.WebUrl;
 
@@ -19,11 +19,11 @@ public class PageCrawler {
 
 	private PageParser parser;
 	private Configuration configuration;
-	private RobotsTxtFecher robotsTxtFecher;
+	private RobotstxtFecher robotsTxtFecher;
 
 	public PageCrawler(Configuration configuration, PageParser parser) {
 		this.configuration = configuration;
-		this.robotsTxtFecher = new RobotsTxtFecher(configuration);
+		this.robotsTxtFecher = new RobotstxtFecher(configuration);
 		if (parser == null) {
 			throw new IllegalArgumentException("Parser is null.");
 		}

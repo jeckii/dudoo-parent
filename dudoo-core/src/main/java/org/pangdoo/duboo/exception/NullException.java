@@ -1,6 +1,6 @@
 package org.pangdoo.duboo.exception;
 
-public class NullException extends Exception {
+public class NullException extends RuntimeException {
 
 	private static final long serialVersionUID = 4458347043290720360L;
 	

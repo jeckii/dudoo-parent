@@ -14,9 +14,9 @@ import org.pangdoo.duboo.request.impl.BasicHttpGet;
 import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.LogLogger;
 
-public class RobotsTxtFecher {
+public class RobotstxtFecher {
 	
-	private LogLogger logger = LogLogger.getLogger(RobotsTxtFecher.class);
+	private LogLogger logger = LogLogger.getLogger(RobotstxtFecher.class);
 	
 	private final String ROBOTS_TXT_PATH = "/robots.txt";
 	
@@ -30,7 +30,7 @@ public class RobotsTxtFecher {
 	
 	private Map<String, List<String>> items;
 	
-	public RobotsTxtFecher(Configuration config) {
+	public RobotstxtFecher(Configuration config) {
 		this.config = config;
 		this.fetcher = FetcherBuilder.build(config);
 	}
@@ -48,7 +48,7 @@ public class RobotsTxtFecher {
 	    	if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == 200) {
 	    		HttpEntity entity = response.getEntity();
 	    		if (entity != null) {
-	    			RobotsTxtParser reader = new RobotsTxtParser(entity.getContent(), config.getCharset());
+	    			RobotstxtParser reader = new RobotstxtParser(entity.getContent(), config.getCharset());
 		        	items = reader.items(config.getUserAgent());
 		        	Robot robot = new Robot();
 		        	robot.setAllow(allow());

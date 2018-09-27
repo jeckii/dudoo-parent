@@ -13,11 +13,8 @@ import org.pangdoo.duboo.handler.MultiLoader;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
-import org.pangdoo.duboo.util.LogLogger;
 
 public class MultiCrawlerExecutor {
-	
-	private LogLogger logger = LogLogger.getLogger(MultiCrawlerExecutor.class);
 	
 	private ScheduledExecutorService executors;
 	
@@ -38,11 +35,7 @@ public class MultiCrawlerExecutor {
 			public void run() {
 				WebUrl webUrl = urlRequst.getUrl();
 				if (webUrl == null) {
-					try {
-						throw new NullException("URL is null.");
-					} catch (NullException e) {
-						logger.warn(e);
-					}
+					throw new NullException("URL is null.");
 				}
 				Fetcher fetcher = FetcherBuilder.custom()
 						.config(configuration)

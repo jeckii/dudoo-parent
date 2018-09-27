@@ -12,14 +12,14 @@ import java.util.Map;
 import org.pangdoo.duboo.util.LogLogger;
 import org.pangdoo.duboo.util.StringUtils;
 
-public class RobotsTxtParser {
+public class RobotstxtParser {
 	
-	private final LogLogger logger = LogLogger.getLogger(RobotsTxtParser.class);
+	private final LogLogger logger = LogLogger.getLogger(RobotstxtParser.class);
 	
 	private byte[] bytes;
 	private String charsetName;
 	
-	public RobotsTxtParser(InputStream input, String charsetName) throws IOException {
+	public RobotstxtParser(InputStream input, String charsetName) throws IOException {
 		int toIndex = 0;
 		int index = 0;
 		byte[] temp = new byte[1024];

@@ -22,13 +22,13 @@ public class BasicHttpGet extends HttpUrlRequst {
 	}
 
 	@Override
-	public HttpUriRequest request() throws Exception {
+	public HttpUriRequest request() {
 		if (this.webUrl == null) {
 			throw new NullException("URL is null.");
 		}
 		Url url = this.webUrl.getUrl();
 		if (url == null) {
-			throw new NullException("URL is null.");
+			throw new NullException("Unable to resolve to URL.");
 		}
 		RequestBuilder builder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();

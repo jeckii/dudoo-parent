@@ -1,7 +1,2 @@
 # dudoo
-
-#### 项目介绍
-一个Java爬虫项目，底层依托Apache-Httpcomponents项目进行HTTP请求
-
-#### 软件架构
-软件架构说明
+Dudoo is an open source crawler tool, you can also develop it on this basis, we also provide some rich interfaces for easy use with other software.

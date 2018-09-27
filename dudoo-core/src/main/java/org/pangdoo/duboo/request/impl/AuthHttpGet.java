@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
@@ -17,27 +17,19 @@ import org.pangdoo.duboo.url.WebUrl;
 
 public class AuthHttpGet extends HttpUrlRequst {
 	
-	public AuthHttpGet(String username, String password) {
-		this(null, null, username, password, null);
-	}
-	
-	public AuthHttpGet(String username, String password, WebUrl webUrl) {
-		this(null, null, username, password, webUrl);
+	public AuthHttpGet(String host, int port, Credentials credentials) {
+		this(host, port, credentials, null);
 	}
 
-	public AuthHttpGet(String host, Integer port, String username, String password) {
-		this(host, port, username, password, null);
-	}
-
-	public AuthHttpGet(String host, Integer port, String username, String password, WebUrl webUrl) {
+	public AuthHttpGet(String host, int port, Credentials credentials, WebUrl webUrl) {
 		super(webUrl);
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(host, port), new UsernamePasswordCredentials(username, password));
+		credsProvider.setCredentials(new AuthScope(host, port), credentials);
 		setCredsProvider(credsProvider);
 	}
 
 	@Override
-	public HttpUriRequest request() throws Exception {
+	public HttpUriRequest request() {
 		if (this.webUrl == null) {
 			throw new NullException("URL is null.");
 		}

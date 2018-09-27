@@ -67,24 +67,19 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 	
 	private WebUrl addUrl(String url, int depth) {
-		try {
-			if (this.urls == null) {
-				this.urls = new HashSet<WebUrl>();
-			}
-			WebUrl webUrl = new WebUrl(url, depth);
-			if (this.locations == null) {
-				this.locations = new HashSet<String>();
-			}
-			String location = webUrl.getUrl().getLocation();
-			if (!StringUtils.isBlank(location)) {
-				this.locations.add(webUrl.getUrl().getScheme() + "://" + location);
-			}
-			this.urls.add(webUrl);
-			return webUrl;
-		} catch (Exception e) {
-			logger.warn(e);
+		if (this.urls == null) {
+			this.urls = new HashSet<WebUrl>();
 		}
-		return null;
+		WebUrl webUrl = new WebUrl(url, depth);
+		if (this.locations == null) {
+			this.locations = new HashSet<String>();
+		}
+		String location = webUrl.getUrl().getLocation();
+		if (!StringUtils.isBlank(location)) {
+			this.locations.add(webUrl.getUrl().getScheme() + "://" + location);
+		}
+		this.urls.add(webUrl);
+		return webUrl;
 	}
 	
 	public WebUrl setNextUrl(WebUrl nextUrl) {
@@ -125,7 +120,7 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 
 	@Override
-	public WebUrl consume() throws NullException {
+	public WebUrl consume() {
 		if (this.remains == null) {
 			return null;
 		}
@@ -137,30 +132,26 @@ public final class DefaultUrlCollector implements UrlCollector {
 
 	@Override
 	public WebUrl moveToRedirect(final String url) {
-		try {
-			WebUrl next = this.nextUrl;
-			if (next == null) {
-				throw new NullException("Next URL is null");
-			}
-			if (this.redirectUrls == null) {
-				this.redirectUrls = new HashMap<String, WebUrl>();
-			}
-			WebUrl nextUrl = addUrl(url, next.getDepth());
-			if (nextUrl != null) {
-				this.redirectUrls.put(next.getOriginalUrl(), nextUrl);
-				this.urls.remove(next);
-				return setNextUrl(nextUrl);
-			}
-		} catch (Exception e) {
-			logger.warn(e);
+		WebUrl next = this.nextUrl;
+		if (next == null) {
+			throw new NullException("Next URL is null");
+		}
+		if (this.redirectUrls == null) {
+			this.redirectUrls = new HashMap<String, WebUrl>();
+		}
+		WebUrl nextUrl = addUrl(url, next.getDepth());
+		if (nextUrl != null) {
+			this.redirectUrls.put(next.getOriginalUrl(), nextUrl);
+			this.urls.remove(next);
+			return setNextUrl(nextUrl);
 		}
 		return null;
 	}
 	
 	@Override
-	public long size() throws NullException {
+	public long size() {
 		if (this.urls == null) {
-			throw new NullException("List of URL is null.");
+			throw new NullPointerException("List of URL is null.");
 		}
 		return this.urls.size();
 	}
@@ -168,11 +159,7 @@ public final class DefaultUrlCollector implements UrlCollector {
 	@Override
 	public boolean hasNext() {
 		if (this.remains == null) {
-			try {
-				throw new NullException("Remains is null.");
-			} catch (NullException e) {
-				logger.warn(e);
-			}
+			throw new NullException("Remains is null.");
 		}
 		if (this.remains.isEmpty()) {
 			return false;
@@ -212,9 +199,9 @@ public final class DefaultUrlCollector implements UrlCollector {
 	}
 	
 	@Override
-	public Set<WebUrl> rebuild() throws NullException {
+	public Set<WebUrl> rebuild() {
 		if (this.urls == null) {
-			throw new NullException("Set of URL is null.");
+			throw new NullPointerException("Set of URL is null.");
 		}
 		this.remains.addAll(this.urls);
 		return this.remains;

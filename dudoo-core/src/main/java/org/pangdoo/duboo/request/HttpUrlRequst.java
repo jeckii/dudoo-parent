@@ -3,8 +3,11 @@ package org.pangdoo.duboo.request;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.url.WebUrl;
 
 public abstract class HttpUrlRequst {
@@ -60,9 +63,17 @@ public abstract class HttpUrlRequst {
 		this.webUrl = webUrl;
 	}
 	
+	public void setProxy(String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
+		if (this.credsProvider == null) {
+			throw new NullException("Credentials provider is null.");
+		}
+		this.credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
+				new UsernamePasswordCredentials(proxyUsername, proxyPassword));
+	}
+	
 	public HttpUrlRequst() {
 	}
 
-	public abstract HttpUriRequest request() throws Exception;
+	public abstract HttpUriRequest request();
 
 }

@@ -26,8 +26,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.ssl.SSLContexts;
+import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.util.LogLogger;
+import org.pangdoo.duboo.util.StringUtils;
 
 public class Fetcher {
 	
@@ -107,6 +109,13 @@ public class Fetcher {
     public HttpResponse fetch(HttpUrlRequst urlRequst) {
     	HttpResponse httpResponse = new HttpResponse();
     	try {
+			if (!StringUtils.isBlank(config.getProxyHost())) {
+				if (StringUtils.isEmpty(config.getProxyUsername()) || StringUtils.isEmpty(config.getProxyPassword())) {
+					throw new NullException("Proxy authorization information is null.");
+				}
+				urlRequst.setProxy(config.getProxyHost(), config.getProxyPort(), config.getProxyUsername(),
+						config.getProxyPassword());
+			}
     		HttpUriRequest request = urlRequst.request();
     		response = httpClient.execute(request);
 			httpResponse.setEntity(response.getEntity());

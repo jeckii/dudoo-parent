@@ -40,11 +40,7 @@ public class PageCrawlerExecutor {
 			public Object call() {
 				WebUrl webUrl = urlRequst.getUrl();
 				if (webUrl == null) {
-					try {
-						throw new NullException("URL is null.");
-					} catch (NullException e) {
-						logger.warn(e);
-					}
+					throw new NullException("URL is null.");
 				}
 				Fetcher fetcher = FetcherBuilder.custom()
 						.config(configuration)

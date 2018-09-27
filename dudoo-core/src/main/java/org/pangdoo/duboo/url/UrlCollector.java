@@ -3,8 +3,6 @@ package org.pangdoo.duboo.url;
 import java.util.Collection;
 import java.util.Set;
 
-import org.pangdoo.duboo.exception.NullException;
-
 /**
  * This interface represents an abstract collector for URL
  * objects.The collector will encapsulate URL into {@link WebUrl}.
@@ -26,9 +24,8 @@ public interface UrlCollector {
 	
 	/**
 	 * @return the size of the collector
-	 * @throws NullException
 	 */
-	long size() throws NullException;
+	long size();
 	
 	/**
 	 * Returns {@code true} if the {@link WebUrl} collector has one can be used.
@@ -39,9 +36,8 @@ public interface UrlCollector {
 	
 	/**
 	 * @return a {@link WebUrl} for working
-	 * @throws NullException
 	 */
-	WebUrl consume() throws NullException;
+	WebUrl consume();
 	
 	/**
 	 * Making the redirect {@link WebUrl} 
@@ -78,9 +74,8 @@ public interface UrlCollector {
 	 * Put all {@link WebUrl} back into the job queue.
 	 * 
 	 * @return a {@link WebUrl} set
-	 * @throws NullException
 	 */
-	Set<WebUrl> rebuild() throws NullException;
+	Set<WebUrl> rebuild();
 	
 	/**
 	 * Clear all {@link WebUrl} of the collector.

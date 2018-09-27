@@ -8,11 +8,11 @@ public class WebUrl {
 	public WebUrl() {
 	}
 	
-	public WebUrl(final String url) throws Exception {
+	public WebUrl(final String url) {
 		this(url, 1);
 	}
 	
-	public WebUrl(final String url, int depth) throws Exception {
+	public WebUrl(final String url, int depth) {
 		this.originalUrl = url;
 		this.depth = depth;
 		this.url = UrlResolver.parser(url);
@@ -59,7 +59,7 @@ public class WebUrl {
 		this.url = url;
 	}
 	
-	private String extractDomain(String location) throws Exception {
+	private String extractDomain(String location) {
 		if (StringUtils.isEmpty(location)) {
 			throw new NullException("Location is null.");
 		}

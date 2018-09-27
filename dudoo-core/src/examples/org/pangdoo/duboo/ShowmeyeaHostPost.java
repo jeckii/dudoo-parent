@@ -9,7 +9,7 @@ import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.handler.PageParser;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.request.impl.BasicHttpPost;
-import org.pangdoo.duboo.robots.RobotsTxtParser;
+import org.pangdoo.duboo.robots.RobotstxtParser;
 import org.pangdoo.duboo.url.WebUrl;
 
 public class ShowmeyeaHostPost {
@@ -27,7 +27,7 @@ public class ShowmeyeaHostPost {
 				@Override
 				public Object parse(HttpEntity entity, String baseUrl) {
 					try {
-						RobotsTxtParser parser = new RobotsTxtParser(entity.getContent(), config.getCharset());
+						RobotstxtParser parser = new RobotstxtParser(entity.getContent(), config.getCharset());
 						System.out.println(parser.getContent());
 					} catch (Exception e) {
 						e.printStackTrace();

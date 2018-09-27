@@ -9,7 +9,7 @@ import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.MultiLoader;
 import org.pangdoo.duboo.request.HttpUrlRequst;
 import org.pangdoo.duboo.robots.RobotsCache;
-import org.pangdoo.duboo.robots.RobotsTxtFecher;
+import org.pangdoo.duboo.robots.RobotstxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
@@ -18,11 +18,11 @@ public class MultiCrawler {
 	
 	private MultiLoader multiLoader;
 	private Configuration configuration;
-	private RobotsTxtFecher robotsTxtFecher;
+	private RobotstxtFecher robotsTxtFecher;
 	
 	public MultiCrawler(Configuration configuration, MultiLoader multiLoader) {
 		this.configuration = configuration;
-		this.robotsTxtFecher = new RobotsTxtFecher(configuration);
+		this.robotsTxtFecher = new RobotstxtFecher(configuration);
 		if (multiLoader == null) {
 			throw new IllegalArgumentException("Loader is null.");
 		}
