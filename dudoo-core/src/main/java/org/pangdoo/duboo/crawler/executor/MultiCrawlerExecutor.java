@@ -10,7 +10,7 @@ import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.MultiLoader;
-import org.pangdoo.duboo.request.HttpUrlRequst;
+import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.url.UrlResolver;
 import org.pangdoo.duboo.url.WebUrl;
 
@@ -28,20 +28,19 @@ public class MultiCrawlerExecutor {
 		executors = Executors.newScheduledThreadPool(DEFAULT_POOL_SIZE);
 	}
 	
-	public void run(Configuration configuration, HttpUrlRequst urlRequst, MultiLoader multiLoader) {
+	public void run(Configuration configuration, HttpRequest request, MultiLoader multiLoader) {
 		executors.schedule(new Runnable() {
 
 			@Override
 			public void run() {
-				WebUrl webUrl = urlRequst.getUrl();
+				WebUrl webUrl = request.getUrl();
 				if (webUrl == null) {
 					throw new NullException("URL is null.");
 				}
 				Fetcher fetcher = FetcherBuilder.custom()
-						.config(configuration)
-						.provider(urlRequst.getCredsProvider())
+						.provider(request.getCredsProvider())
 						.build();
-				HttpEntity entity = fetcher.fetch(urlRequst).getEntity();
+				HttpEntity entity = fetcher.fetch(request).getEntity();
 				if (entity != null) {
 					multiLoader.load(entity, UrlResolver.multiName(webUrl.getUrl().toString()));
 				}

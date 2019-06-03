@@ -9,7 +9,7 @@ import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.PageParser;
-import org.pangdoo.duboo.request.HttpUrlRequst;
+import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.robots.RobotsCache;
 import org.pangdoo.duboo.robots.RobotstxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
@@ -30,7 +30,7 @@ public class PageCrawler {
 		this.parser = parser;
 	}
 
-	public List<Object> crawl(HttpUrlRequst urlRequst, UrlCollector collector) throws Exception {
+	public List<Object> crawl(HttpRequest urlRequst, UrlCollector collector) throws Exception {
 		Set<String> locations = collector.locations();
 		for (String location : locations) {
 			if (!RobotsCache.hasLocation(location)) {
@@ -44,7 +44,6 @@ public class PageCrawler {
 		}
 		List<Object> dataList = new ArrayList<Object>(new Long(size).intValue());
 		Fetcher fetcher = FetcherBuilder.custom()
-				.config(configuration)
 				.provider(urlRequst.getCredsProvider())
 				.build();
 		while (collector.hasNext()) {

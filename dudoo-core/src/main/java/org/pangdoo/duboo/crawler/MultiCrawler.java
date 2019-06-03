@@ -7,7 +7,7 @@ import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
 import org.pangdoo.duboo.handler.MultiLoader;
-import org.pangdoo.duboo.request.HttpUrlRequst;
+import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.robots.RobotsCache;
 import org.pangdoo.duboo.robots.RobotstxtFecher;
 import org.pangdoo.duboo.url.UrlCollector;
@@ -29,7 +29,7 @@ public class MultiCrawler {
 		this.multiLoader = multiLoader;
 	}
 	
-	public void crawl(HttpUrlRequst urlRequst, UrlCollector collector) throws Exception {
+	public void crawl(HttpRequest urlRequst, UrlCollector collector) throws Exception {
 		Set<String> locations = collector.locations();
 		for (String location : locations) {
 			if (!RobotsCache.hasLocation(location)) {
@@ -38,7 +38,6 @@ public class MultiCrawler {
 			collector.filter(location);
 		}
 		Fetcher fetcher = FetcherBuilder.custom()
-				.config(configuration)
 				.provider(urlRequst.getCredsProvider())
 				.build();
 		while (collector.hasNext()) {

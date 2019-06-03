@@ -1,7 +1,9 @@
 package org.pangdoo.duboo.fetcher;
 
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Configuration {
 	
@@ -18,9 +20,9 @@ public class Configuration {
 	private int maxConnectionsPerHost = 100;
 
     private int maxTotalConnections = 100;
-    
-    private CookieStore cookieStore;
-    
+
+	private Map<String, String> cookies = new HashMap<String, String>();
+
     private String proxyHost = null;
     
     private int proxyPort = 80;
@@ -91,12 +93,12 @@ public class Configuration {
 		this.maxTotalConnections = maxTotalConnections;
 	}
 
-	public CookieStore getCookieStore() {
-		return cookieStore;
+	public Map<String, String> getCookies() {
+		return cookies;
 	}
 
-	public void setCookieStore(CookieStore cookieStore) {
-		this.cookieStore = cookieStore;
+	public void setCookies(Map<String, String> cookies) {
+		this.cookies = cookies;
 	}
 
 	public String getProxyHost() {

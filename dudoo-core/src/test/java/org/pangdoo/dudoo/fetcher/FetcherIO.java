@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
-import org.pangdoo.duboo.fetcher.HttpResponse;
-import org.pangdoo.duboo.request.impl.BasicHttpGet;
+import org.pangdoo.duboo.http.HttpResponse;
+import org.pangdoo.duboo.http.basic.BasicHttpGet;
 import org.pangdoo.duboo.url.WebUrl;
 
 public class FetcherIO {

@@ -11,9 +11,9 @@ import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.FetcherBuilder;
-import org.pangdoo.duboo.fetcher.HttpResponse;
+import org.pangdoo.duboo.http.HttpResponse;
 import org.pangdoo.duboo.handler.PageParser;
-import org.pangdoo.duboo.request.HttpUrlRequst;
+import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.url.WebUrl;
 import org.pangdoo.duboo.util.LogLogger;
 
@@ -33,20 +33,19 @@ public class PageCrawlerExecutor {
 		executors = Executors.newScheduledThreadPool(poolSize);
 	}
 	
-	public Object run(Configuration configuration, HttpUrlRequst urlRequst, PageParser parser) {
+	public Object run(Configuration configuration, HttpRequest request, PageParser parser) {
 		Future<Object> future = executors.schedule(new Callable<Object>() {
 
 			@Override
 			public Object call() {
-				WebUrl webUrl = urlRequst.getUrl();
+				WebUrl webUrl = request.getUrl();
 				if (webUrl == null) {
 					throw new NullException("URL is null.");
 				}
 				Fetcher fetcher = FetcherBuilder.custom()
-						.config(configuration)
-						.provider(urlRequst.getCredsProvider())
+						.provider(request.getCredsProvider())
 						.build();
-				HttpResponse response = fetcher.fetch(urlRequst);
+				HttpResponse response = fetcher.fetch(request);
 				HttpEntity entity = response.getEntity();
 				if (entity == null) {
 					logger.warn("Abnormal crawl instruction ： " + webUrl.getOriginalUrl());
