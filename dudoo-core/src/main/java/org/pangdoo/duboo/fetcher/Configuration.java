@@ -37,6 +37,8 @@ public class Configuration {
     
     private String charset = "UTF-8";
 
+    private boolean gzip = false;
+
 	public Integer getMaxDepth() {
 		return maxDepth;
 	}
@@ -157,4 +159,11 @@ public class Configuration {
 		this.charset = charset;
 	}
 
+	public boolean isGzip() {
+		return gzip;
+	}
+
+	public void setGzip(boolean gzip) {
+		this.gzip = gzip;
+	}
 }

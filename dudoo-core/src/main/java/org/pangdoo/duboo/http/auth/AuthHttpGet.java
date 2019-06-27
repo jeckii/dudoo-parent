@@ -10,10 +10,11 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.http.HttpRequest;
-import org.pangdoo.duboo.url.Url;
-import org.pangdoo.duboo.url.WebUrl;
+import org.pangdoo.duboo.url.IllegalURLException;
+import org.pangdoo.duboo.url.NoURLException;
+import org.pangdoo.duboo.url.URL;
+import org.pangdoo.duboo.url.WebURL;
 
 public class AuthHttpGet extends HttpRequest {
 	
@@ -21,7 +22,7 @@ public class AuthHttpGet extends HttpRequest {
 		this(host, port, credentials, null);
 	}
 
-	public AuthHttpGet(String host, int port, Credentials credentials, WebUrl webUrl) {
+	public AuthHttpGet(String host, int port, Credentials credentials, WebURL webUrl) {
 		super(webUrl);
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(host, port), credentials);
@@ -30,12 +31,12 @@ public class AuthHttpGet extends HttpRequest {
 
 	@Override
 	public HttpUriRequest request() {
-		if (this.webUrl == null) {
-			throw new NullException("URL is null.");
+		if (this.webURL == null) {
+			throw new NoURLException("URL is null.");
 		}
-		Url url = this.webUrl.getUrl();
+		URL url = this.webURL.getUrl();
 		if (url == null) {
-			throw new NullException("URL is null.");
+			throw new IllegalURLException("URL is null.");
 		}
 		RequestBuilder builder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();

@@ -8,7 +8,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.pangdoo.duboo.http.basic.BasicHttpPost;
-import org.pangdoo.duboo.url.WebUrl;
+import org.pangdoo.duboo.url.WebURL;
 
 public class AuthHttpPost extends BasicHttpPost {
 	
@@ -18,7 +18,7 @@ public class AuthHttpPost extends BasicHttpPost {
 	}
 
 	public AuthHttpPost(String host, Integer port, Credentials credentials,
-			HttpEntity entity, Map<String, String> params, WebUrl webUrl) {
+			HttpEntity entity, Map<String, String> params, WebURL webUrl) {
 		super(entity, params, webUrl);
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(host, port), credentials);

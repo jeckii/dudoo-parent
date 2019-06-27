@@ -1,42 +1,44 @@
 package org.pangdoo.duboo.examples;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
-import org.pangdoo.duboo.crawler.executor.PageCrawlerExecutor;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.pangdoo.duboo.crawler.Crawler;
 import org.pangdoo.duboo.fetcher.Configuration;
-import org.pangdoo.duboo.handler.PageParser;
+import org.pangdoo.duboo.fetcher.Options;
+import org.pangdoo.duboo.handler.Handler;
+import org.pangdoo.duboo.handler.page.PageParser;
 import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.http.basic.BasicHttpPost;
-import org.pangdoo.duboo.robots.RobotstxtParser;
-import org.pangdoo.duboo.url.WebUrl;
+import org.pangdoo.duboo.robots.RobotsParser;
+import org.pangdoo.duboo.url.WebURL;
 
 public class ShowmeyeaHostPost {
 	
 	public static void main(String[] args) throws Exception {
-		Configuration config = new Configuration();
-		PageCrawlerExecutor crawler = new PageCrawlerExecutor();
+
+
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("hotspot", "川普誓言改变美国");
-		String url = "http://www.showmeyea.com/app/smy/api/hotspot/update";
-		HttpRequest request = new BasicHttpPost(param, new WebUrl(url));
-		for (int i = 0;i < 500; i ++) {
-			crawler.run(config, request, new PageParser() {
-				
-				@Override
-				public Object parse(HttpEntity entity, String baseUrl) {
+		Options options = Options.opts();
+		Crawler.custom().url("http://www.showmeyea.com/app/smy/api/hotspot/update").handler(new Handler() {
+			@Override
+			public Object handle(HttpEntity entity, Object obj) {
+				if (entity.isChunked() || entity.getContentLength() > 0) {
 					try {
-						RobotstxtParser parser = new RobotstxtParser(entity.getContent(), config.getCharset());
+						RobotsParser parser = new RobotsParser(entity.getContent(), "UTF-8");
 						System.out.println(parser.getContent());
-					} catch (Exception e) {
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					return null;
 				}
-			});
-		}
-		crawler.shutdown();
+				return null;
+			}
+		}).options(options).params(param).post();
 	}
 
 }

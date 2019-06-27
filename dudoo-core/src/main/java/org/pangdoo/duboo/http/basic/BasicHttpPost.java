@@ -7,10 +7,11 @@ import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.http.HttpRequest;
-import org.pangdoo.duboo.url.Url;
-import org.pangdoo.duboo.url.WebUrl;
+import org.pangdoo.duboo.url.IllegalURLException;
+import org.pangdoo.duboo.url.NoURLException;
+import org.pangdoo.duboo.url.URL;
+import org.pangdoo.duboo.url.WebURL;
 
 public class BasicHttpPost extends HttpRequest {
 
@@ -21,7 +22,7 @@ public class BasicHttpPost extends HttpRequest {
 		this(null, params, null);
 	}
 	
-	public BasicHttpPost(Map<String, String> params, WebUrl webUrl) {
+	public BasicHttpPost(Map<String, String> params, WebURL webUrl) {
 		this(null, params, webUrl);
 	}
 
@@ -29,7 +30,7 @@ public class BasicHttpPost extends HttpRequest {
 		this(entity, params, null);
 	}
 
-	public BasicHttpPost(HttpEntity entity, Map<String, String> params, WebUrl webUrl) {
+	public BasicHttpPost(HttpEntity entity, Map<String, String> params, WebURL webUrl) {
 		super(webUrl);
 		this.entity = entity;
 		this.params = params;
@@ -37,12 +38,12 @@ public class BasicHttpPost extends HttpRequest {
 
 	@Override
 	public HttpUriRequest request() {
-		if (this.webUrl == null) {
-			throw new NullException("URL is null.");
+		if (this.webURL == null) {
+			throw new NoURLException("URL is null.");
 		}
-		Url url = this.webUrl.getUrl();
+		URL url = this.webURL.getUrl();
 		if (url == null) {
-			throw new NullException("URL is null.");
+			throw new IllegalURLException("URL is null.");
 		}
 		RequestBuilder builder = RequestBuilder.post(url.toString());
 		Map<String, String> header = getHeaders();

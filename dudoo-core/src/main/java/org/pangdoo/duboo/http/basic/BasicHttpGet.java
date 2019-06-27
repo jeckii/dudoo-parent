@@ -6,10 +6,11 @@ import java.util.Map;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.pangdoo.duboo.exception.NullException;
 import org.pangdoo.duboo.http.HttpRequest;
-import org.pangdoo.duboo.url.Url;
-import org.pangdoo.duboo.url.WebUrl;
+import org.pangdoo.duboo.url.IllegalURLException;
+import org.pangdoo.duboo.url.NoURLException;
+import org.pangdoo.duboo.url.URL;
+import org.pangdoo.duboo.url.WebURL;
 
 public class BasicHttpGet extends HttpRequest {
 
@@ -17,18 +18,18 @@ public class BasicHttpGet extends HttpRequest {
 		super();
 	}
 
-	public BasicHttpGet(WebUrl webUrl) {
+	public BasicHttpGet(WebURL webUrl) {
 		super(webUrl);
 	}
 
 	@Override
 	public HttpUriRequest request() {
-		if (this.webUrl == null) {
-			throw new NullException("URL is null.");
+		if (this.webURL == null) {
+			throw new NoURLException("URL is null.");
 		}
-		Url url = this.webUrl.getUrl();
+		URL url = this.webURL.getUrl();
 		if (url == null) {
-			throw new NullException("Unable to resolve to URL.");
+			throw new IllegalURLException("Unable to resolve to URL.");
 		}
 		RequestBuilder builder = RequestBuilder.get(url.toString());
 		Map<String, String> header = getHeaders();

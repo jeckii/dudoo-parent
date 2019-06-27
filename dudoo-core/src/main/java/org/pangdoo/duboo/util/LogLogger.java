@@ -18,6 +18,10 @@ public class LogLogger {
 	public void info(String info){
 		logger.info(info);
 	}
+
+	public void info(String info, Object... objects) {
+		logger.info(info, objects);
+	}
 	
 	public void info(Exception e){
 		logger.info(null, e);
@@ -29,6 +33,10 @@ public class LogLogger {
 	
 	public void debug(String debug){
 		logger.debug(debug);
+	}
+
+	public void debug(String debug, Object... objects) {
+		logger.debug(debug, objects);
 	}
 	
 	public void debug(Exception e){
@@ -42,6 +50,10 @@ public class LogLogger {
 	public void warn(String warn){
 		logger.warn(warn);
 	}
+
+	public void warn(String warn, Object... objects) {
+		logger.warn(warn, objects);
+	}
 	
 	public void warn(Exception e){
 		logger.warn(null, e);
@@ -53,6 +65,10 @@ public class LogLogger {
 	
 	public void error(String error){
 		logger.error(error);
+	}
+
+	public void error(String error, Object... objects) {
+		logger.error(error, objects);
 	}
 	
 	public void error(Exception e){
