@@ -1,14 +1,11 @@
 package org.pangdoo.duboo.crawler;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.Options;
 import org.pangdoo.duboo.handler.Handler;
-import org.pangdoo.duboo.http.Credential;
+import org.pangdoo.duboo.http.HttpResponse;
+import org.pangdoo.duboo.http.authentication.*;
 import org.pangdoo.duboo.http.HttpRequest;
-import org.pangdoo.duboo.http.auth.AuthHttpGet;
 import org.pangdoo.duboo.http.basic.BasicHttpGet;
 import org.pangdoo.duboo.http.basic.BasicHttpPost;
 import org.pangdoo.duboo.robots.Robots;
@@ -16,6 +13,7 @@ import org.pangdoo.duboo.robots.RobotsCache;
 import org.pangdoo.duboo.url.URL;
 import org.pangdoo.duboo.url.WebURL;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Crawler {
@@ -50,17 +48,19 @@ public class Crawler {
 
     private Credential credential;
 
-    private Crawler credential(Credential credential) {
+    public Crawler credential(Credential credential) {
         this.credential = credential;
         return this;
     }
 
     public void get() {
         if (this.credential != null) {
-            crawl(new AuthHttpGet(this.credential.getHost(), this.credential.getPort(),
-                    new UsernamePasswordCredentials(this.credential.getUsername(), this.credential.getPassword())));
+            if (this.credential instanceof FormCredential) {
+                formLogin();
+            }
+            doCrawl(new AuthHttpGet(this.credential));
         } else {
-            crawl(new BasicHttpGet());
+            doCrawl(new BasicHttpGet());
         }
     }
 
@@ -71,32 +71,53 @@ public class Crawler {
         return this;
     }
 
+    public Crawler param(String param, String value) {
+        if (this.params == null) {
+            this.params = new HashMap<String, String>();
+        }
+        this.params.put(param, value);
+        return this;
+    }
+
     public void post() {
         if (this.credential != null) {
-
+            if (this.credential instanceof FormCredential) {
+                formLogin();
+            }
+            doCrawl(new AuthHttpPost(this.credential, this.params));
         } else {
-            crawl(new BasicHttpPost(this.params));
+            doCrawl(new BasicHttpPost(this.params));
         }
     }
 
-    private void crawl(HttpRequest httpRequest) {
+    private void formLogin() {
+        if (this.options == null) {
+            this.options = Options.opts();
+        }
+        Fetcher.custom(this.options)
+                .credential(this.credential)
+                .build()
+                .doFormLogin();
+    }
+
+    private void doCrawl(HttpRequest httpRequest) {
         if (this.options == null) {
             this.options = Options.opts();
         }
         Fetcher fetcher = Fetcher.custom(this.options)
-                .provider(httpRequest.getCredsProvider())
+                .credential(httpRequest.getCredential())
                 .build();
         if (!RobotsCache.hasLocation(this.url.getOrigin())) {
             URL url = this.url.getUrl();
-            Robots.custom(this.options).fetch(url.getScheme() + "://" + url.getLocation());
+            Robots.custom(this.options).fetch(url.getScheme() + "://" + this.url.getLocation());
         }
         if (RobotsCache.hasLocation(this.url.getOrigin())) {
             return;
         }
         httpRequest.setWebURL(this.url);
-        HttpEntity entity = fetcher.fetch(httpRequest).getEntity();
-        if (entity != null) {
-            this.handler.handle(entity, this.url);
+        HttpResponse httpResponse = fetcher.fetch(httpRequest);
+        if (this.handler != null) {
+            this.handler.handle(httpResponse.getEntity(), this.url);
         }
         fetcher.shutdown();
     }

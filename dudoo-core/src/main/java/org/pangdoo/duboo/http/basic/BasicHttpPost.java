@@ -15,25 +15,13 @@ import org.pangdoo.duboo.url.WebURL;
 
 public class BasicHttpPost extends HttpRequest {
 
-	protected HttpEntity entity;
 	protected Map<String, String> params;
 	
 	public BasicHttpPost(Map<String, String> params) {
-		this(null, params, null);
+		this(params, null);
 	}
 	
 	public BasicHttpPost(Map<String, String> params, WebURL webUrl) {
-		this(null, params, webUrl);
-	}
-
-	public BasicHttpPost(HttpEntity entity, Map<String, String> params) {
-		this(entity, params, null);
-	}
-
-	public BasicHttpPost(HttpEntity entity, Map<String, String> params, WebURL webUrl) {
-		super(webUrl);
-		this.entity = entity;
-		this.params = params;
 	}
 
 	@Override
@@ -54,9 +42,6 @@ public class BasicHttpPost extends HttpRequest {
 				String name = headerIterator.next();
 				builder.addHeader(name, header.get(name));
 			}
-		}
-		if (entity != null) {
-			builder.setEntity(entity);
 		}
 		if (params != null && !params.isEmpty()) {
 			Iterator<String> paramsIterator = params.keySet()

@@ -12,71 +12,71 @@ public class LogLogger {
 	}
 	
 	private LogLogger(Class<?> clazz) {
-		logger = LoggerFactory.getLogger(clazz);
+		this.logger = LoggerFactory.getLogger(clazz);
 	}
 	
 	public void info(String info){
-		logger.info(info);
+		this.logger.info(info);
 	}
 
 	public void info(String info, Object... objects) {
-		logger.info(info, objects);
+		this.logger.info(info, objects);
 	}
 	
 	public void info(Exception e){
-		logger.info(null, e);
+		this.logger.info(null, e);
 	}
 	
 	public void info(String info, Exception e){
-		logger.info(info, e);
+		this.logger.info(info, e);
 	}
 	
 	public void debug(String debug){
-		logger.debug(debug);
+		this.logger.debug(debug);
 	}
 
 	public void debug(String debug, Object... objects) {
-		logger.debug(debug, objects);
+		this.logger.debug(debug, objects);
 	}
 	
 	public void debug(Exception e){
-		logger.debug(null, e);
+		this.logger.debug(null, e);
 	}
 	
 	public void debug(String debug, Exception e){
-		logger.debug(debug, e);
+		this.logger.debug(debug, e);
 	}
 	
 	public void warn(String warn){
-		logger.warn(warn);
+		this.logger.warn(warn);
 	}
 
 	public void warn(String warn, Object... objects) {
-		logger.warn(warn, objects);
+		this.logger.warn(warn, objects);
 	}
 	
 	public void warn(Exception e){
-		logger.warn(null, e);
+		this.logger.warn(null, e);
 	}
 	
 	public void warn(String warn, Exception e){
-		logger.warn(warn, e);
+		this.logger.warn(warn, e);
 	}
 	
 	public void error(String error){
-		logger.error(error);
+		this.logger.error(error);
 	}
 
 	public void error(String error, Object... objects) {
-		logger.error(error, objects);
+		this.logger.error(error, objects);
 	}
 	
 	public void error(Exception e){
-		logger.error(null, e);
+		this.logger.error(null, e);
 	}
 	
 	public  void error(String error, Exception e){
-		logger.error(error, e);
+		this.logger.error(error, e);
 	}
 
 }

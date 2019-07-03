@@ -1,8 +1,7 @@
 package org.pangdoo.duboo.handler;
 
 import org.apache.http.HttpEntity;
-
-import java.io.IOException;
+import org.pangdoo.duboo.http.HttpResponse;
 
 public interface Handler {
 

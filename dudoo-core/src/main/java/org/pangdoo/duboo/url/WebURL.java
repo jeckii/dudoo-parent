@@ -15,13 +15,13 @@ public class WebURL {
 		this.origin = url;
 		this.depth = depth;
 		this.url = URLResolver.parser(url);
-		this.domain = extractDomain(this.url.getLocation());
+		this.domain = extractDomain(getLocation());
 	}
 	
 	private String origin;
 	
 	private String domain;
-	
+
 	private int depth;
 	
 	private URL url;
@@ -30,16 +30,15 @@ public class WebURL {
 		return origin;
 	}
 
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
-
 	public String getDomain() {
 		return domain;
 	}
 
-	public void setDomain(String domain) {
-		this.domain = domain;
+	public String getLocation() {
+		if (this.url == null) {
+			throw new NullPointerException("URL is null.");
+		}
+		return this.url.getLocation();
 	}
 
 	public int getDepth() {

@@ -12,7 +12,7 @@ public class BookDownloader {
     public static void main(String[] args) {
         Options options = Options.opts();
         String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36";
-        options.config().setUserAgent(userAgent);
+        options.setUserAgent(userAgent);
         Crawler.custom().url("http://pic.netbian.com/uploads/allimg/180331/182615-15224919751fac.jpg").handler(new Handler() {
             @Override
             public Object handle(HttpEntity entity, Object obj) {

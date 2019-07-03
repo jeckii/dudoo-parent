@@ -20,7 +20,7 @@ public interface URLCollector {
 	 * @param depth
 	 * @return a {@link WebURL} set
 	 */
-	Set<WebURL> add(Collection<String> urls, int depth);
+	Set<WebURL> addAll(Collection<String> urls, int depth);
 	
 	/**
 	 * @return the size of the collector

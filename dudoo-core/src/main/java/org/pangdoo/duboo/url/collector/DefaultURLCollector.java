@@ -12,13 +12,13 @@ import org.pangdoo.duboo.robots.RobotsCache;
 
 public final class DefaultURLCollector implements URLCollector {
 	
-	private LogLogger logger = LogLogger.getLogger(DefaultURLCollector.class);
+	private final static LogLogger logger = LogLogger.getLogger(DefaultURLCollector.class);
 	
 	public DefaultURLCollector() {
 	}
 	
 	public DefaultURLCollector(Collection<String> urls, int depth) {
-		add(urls, depth);
+		addAll(urls, depth);
 	}
 	
 	public DefaultURLCollector(Collection<String> urls) {
@@ -37,18 +37,18 @@ public final class DefaultURLCollector implements URLCollector {
 
 	private Set<WebURL> addUrls(Collection<String> urls, int depth) {
 		try {
-			Set<WebURL> urlTempSet = new HashSet<WebURL>();
+			Set<WebURL> temp = new HashSet<WebURL>();
 			WebURL webUrl;
 			for(String url : urls) {
 				webUrl = new WebURL(url, depth);
-				String location = webUrl.getUrl().getLocation();
+				String location = webUrl.getLocation();
 				if (!StringUtils.isBlank(location)) {
 					this.locations.add(webUrl.getUrl().getScheme() + "://" + location);
 				}
 				this.webUrlCollection.add(webUrl);
-				urlTempSet.add(webUrl);
+				temp.add(webUrl);
 			}
-			return urlTempSet;
+			return temp;
 		} catch (Exception e) {
 			logger.warn(e);
 		}
@@ -57,7 +57,7 @@ public final class DefaultURLCollector implements URLCollector {
 	
 	private WebURL addUrl(String url, int depth) {
 		WebURL webUrl = new WebURL(url, depth);
-		String location = webUrl.getUrl().getLocation();
+		String location = webUrl.getLocation();
 		if (!StringUtils.isBlank(location)) {
 			this.locations.add(webUrl.getUrl().getScheme() + "://" + location);
 		}
@@ -75,7 +75,7 @@ public final class DefaultURLCollector implements URLCollector {
 	}
 
 	@Override
-	public Set<WebURL> add(Collection<String> urls, int depth) {
+	public Set<WebURL> addAll(Collection<String> urls, int depth) {
 		Set<WebURL> temp = addUrls(urlFilter(urls), depth);
 		for (WebURL url : temp) {
 			this.remains.add(url);
@@ -84,13 +84,13 @@ public final class DefaultURLCollector implements URLCollector {
 	}
 	
 	private Set<String> urlFilter(Collection<String> urls) {
-		Set<String> rulRtn = new HashSet<String>();
+		Set<String> rtn = new HashSet<String>();
 		urls.forEach(url -> {
 			if (this.urlCollection.add(url)) {
-				rulRtn.add(url);
+				rtn.add(url);
 			}
 		});
-		return rulRtn;
+		return rtn;
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public final class DefaultURLCollector implements URLCollector {
 		List<String> disallows = RobotsCache.get(location).getDisallow();
 		for (String disallow : disallows) {
 			for (WebURL url : this.webUrlCollection) {
-				if (location.equals(url.getUrl().getLocation()) 
+				if (location.equals(url.getLocation())
 						&& StringUtils.pattern(url.getUrl().getPath(), URLResolver.pathPattern(disallow))) {
 					if(this.webUrlCollection.remove(url)) {
 						count ++;

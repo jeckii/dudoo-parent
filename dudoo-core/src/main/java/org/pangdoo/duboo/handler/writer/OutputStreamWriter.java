@@ -14,8 +14,9 @@ public class OutputStreamWriter {
 	
 	private FileOutputStream fos;
 	private FileChannel fileChannel;
-	
-	private int bufferSize = 1024*1024;
+
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 1024;
+	private int bufferSize = 0;
 	
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
@@ -53,6 +54,9 @@ public class OutputStreamWriter {
 	public void write(InputStream inputStream) {
 		try {
 			fileChannel = fos.getChannel();
+			if (this.bufferSize == 0) {
+				this.bufferSize = DEFAULT_BUFFER_SIZE;
+			}
 			ByteBuffer byteBuffer = ByteBuffer.allocate(this.bufferSize);
 			byte[] bytes = new byte[this.bufferSize];
 			fileChannel.force(true);

@@ -14,7 +14,7 @@ import org.pangdoo.duboo.util.StringUtils;
 
 public class PageParser {
 	
-	private LogLogger logger = LogLogger.getLogger(PageParser.class);
+	private final static LogLogger logger = LogLogger.getLogger(PageParser.class);
 	
 	public static PageParser newInstance() {
 		return new PageParser();

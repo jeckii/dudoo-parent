@@ -5,17 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.pangdoo.duboo.crawler.Crawler;
-import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Options;
 import org.pangdoo.duboo.handler.Handler;
-import org.pangdoo.duboo.handler.page.PageParser;
-import org.pangdoo.duboo.http.HttpRequest;
-import org.pangdoo.duboo.http.basic.BasicHttpPost;
 import org.pangdoo.duboo.robots.RobotsParser;
-import org.pangdoo.duboo.url.WebURL;
 
 public class ShowmeyeaHostPost {
 	

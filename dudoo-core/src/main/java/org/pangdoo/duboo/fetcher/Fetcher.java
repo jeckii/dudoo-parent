@@ -1,16 +1,20 @@
 package org.pangdoo.duboo.fetcher;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
+import org.apache.http.auth.ChallengeState;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
@@ -18,7 +22,9 @@ import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.entity.GZIPInputStreamFactory;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.InputStreamFactory;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.RegistryBuilder;
@@ -27,23 +33,28 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.ssl.SSLContexts;
 import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.http.HttpResponse;
+import org.pangdoo.duboo.http.authentication.BasicCredential;
+import org.pangdoo.duboo.http.authentication.Credential;
+import org.pangdoo.duboo.http.authentication.CredentialTypeErrorException;
+import org.pangdoo.duboo.http.authentication.FormCredential;
 import org.pangdoo.duboo.util.LogLogger;
-import org.pangdoo.duboo.util.StringUtils;
 
 public class Fetcher {
 
-    private LogLogger logger = LogLogger.getLogger(Fetcher.class);
+    private final static LogLogger logger = LogLogger.getLogger(Fetcher.class);
 
     public static Fetcher obj() {
         return new Fetcher();
@@ -54,21 +65,21 @@ public class Fetcher {
     }
 
     protected Fetcher() {
-        this.options = new Options();
+        this.options = Options.opts();
     }
 
     protected Fetcher(Options options) {
         this.options = options;
     }
 
-    protected PoolingHttpClientConnectionManager connectionManager;
     protected CloseableHttpClient httpClient;
-    protected CloseableHttpResponse response;
-    protected CredentialsProvider credsProvider;
+    protected Credential credential;
     protected Options options;
 
-    public Fetcher provider(CredentialsProvider credsProvider) {
-        this.credsProvider = credsProvider;
+    private final static CookieStore COOKIE_STORE = new BasicCookieStore();
+
+    public Fetcher credential(Credential credential) {
+        this.credential = credential;
         return this;
     }
 
@@ -78,13 +89,13 @@ public class Fetcher {
         }
         Builder builder = RequestConfig.custom()
                 .setExpectContinueEnabled(false)
-                .setCookieSpec(config().getCookieSpec())
+                .setCookieSpec(options.getCookieSpec())
                 .setRedirectsEnabled(false)
-                .setConnectionRequestTimeout(config().getConnectionRequestTimeout())
-                .setSocketTimeout(config().getSocketTimeout())
-                .setConnectTimeout(config().getConnectTimeout());
-        if (config().getProxyHost() != null) {
-            builder = builder.setProxy(new HttpHost(config().getProxyHost(), config().getProxyPort()));
+                .setConnectionRequestTimeout(options.getConnectionRequestTimeout())
+                .setSocketTimeout(options.getSocketTimeout())
+                .setConnectTimeout(options.getConnectTimeout());
+        if (options.getProxy() != null) {
+            builder = builder.setProxy(new HttpHost(options.getProxy().getProxyHost(), options.getProxy().getProxyPort()));
         }
         RequestConfig requestConfig = builder.build();
         RegistryBuilder<ConnectionSocketFactory> connRegistryBuilder = RegistryBuilder.create();
@@ -103,120 +114,121 @@ public class Fetcher {
         } catch (Exception e) {
             logger.warn(e);
         }
-        connectionManager = new PoolingHttpClientConnectionManager(connRegistryBuilder.build(), new SystemDefaultDnsResolver());
-        connectionManager.setMaxTotal(config().getMaxTotalConnections());
-        connectionManager.setDefaultMaxPerRoute(config().getMaxConnectionsPerHost());
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(connRegistryBuilder.build(), new SystemDefaultDnsResolver());
+        connectionManager.setMaxTotal(options.getMaxTotalConnections());
+        connectionManager.setDefaultMaxPerRoute(options.getMaxConnectionsPerHost());
         HttpClientBuilder clientBuilder = HttpClientBuilder.create();
         clientBuilder.setDefaultRequestConfig(requestConfig);
-        clientBuilder.setUserAgent(config().getUserAgent());
+        clientBuilder.setUserAgent(options.getUserAgent());
         clientBuilder.setConnectionManager(connectionManager);
-        if (credsProvider != null) {
-            clientBuilder.setDefaultCredentialsProvider(credsProvider);
+        if (credential != null) {
+            if (credential instanceof  BasicCredential) {
+                BasicCredential basicCredential = (BasicCredential) credential;
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(new AuthScope(basicCredential.getHost(), basicCredential.getPort()),
+                        new UsernamePasswordCredentials(basicCredential.getUsername(), basicCredential.getPassword()));
+                clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
         }
-        if (config().isGzip()) {
+        if (options.isGzip()) {
             clientBuilder.addInterceptorFirst(new HttpRequestInterceptor() {
 
                 public void process(
                         final org.apache.http.HttpRequest request,
-                        final HttpContext context) throws HttpException, IOException {
+                        final HttpContext context) {
                     if (!request.containsHeader("Accept-Encoding")) {
                         request.addHeader("Accept-Encoding", "gzip");
-//                        request.addHeader("content-type", "text/html; charset=UTF-8");
                     }
                 }
             });
             Map<String, InputStreamFactory> contentDecoderMap = new HashMap<String, InputStreamFactory>();
             contentDecoderMap.put("gizp", new GZIPInputStreamFactory());
             clientBuilder.setContentDecoderRegistry(contentDecoderMap);
-            /*clientBuilder.setHttpProcessor(new HttpProcessor() {
-
-                @Override
-                public void process(org.apache.http.HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
-                    Header[] contentEncodingHeaders = httpResponse.getHeaders("Content-Encoding");
-                    if( contentEncodingHeaders[0].getValue().contains("gzip") ) {
-                        try(
-                                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                                InputStream responseStream = new GZIPInputStream(httpResponse.getEntity().getContent());
-                        ) {
-                            byte[] buffer = new byte[4096];
-                            int length;
-                            while((length=responseStream.read(buffer))>0){
-                                outStream.write(buffer,0,length);
-                            }
-                            System.out.println(new String(outStream.toByteArray()));
-                        }
-                        catch(Exception exception) {
-                            throw exception;
-                        }
-                    }
-                }
-
-                @Override
-                public void process(org.apache.http.HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
-
-                }
-            });*/
         }
         httpClient = clientBuilder.build();
         return this;
     }
 
-    public HttpResponse fetch(HttpRequest req) {
-        HttpResponse httpResponse = new HttpResponse();
+    public HttpResponse doFormLogin() {
+        if (this.credential == null) {
+            throw new CredentialTypeErrorException("Credential is not found.");
+        }
+        if (!FormCredential.class.isInstance(this.credential)) {
+            throw new CredentialTypeErrorException("This credential can not be used for login form.");
+        }
+        FormCredential formCredential = (FormCredential) this.credential;
+        HttpPost httpPost = new HttpPost(formCredential.getLoginUrl());
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair(formCredential.getUsernameKey(), formCredential.getUsername()));
+        formParams.add(new BasicNameValuePair(formCredential.getPasswordKey(), formCredential.getPassword()));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, StandardCharsets.UTF_8);
+        httpPost.setEntity(entity);
         try {
-            final HttpClientContext httpContext = new HttpClientContext();
-            if (!StringUtils.isBlank(config().getProxyHost())) {
-                req.setProxy(config().getProxyHost(), config().getProxyPort(), config().getProxyUsername(),
-                        config().getProxyPassword());
-//				AuthState authState = new AuthState();
-//				authState.update(new BasicScheme(ChallengeState.PROXY), new UsernamePasswordCredentials(config().getProxyUsername(), config().getProxyPassword()));
-//				httpContext.setAttribute(HttpClientContext.PROXY_AUTH_STATE, authState);
+            final HttpClientContext httpContext = HttpClientContext.create();
+            httpContext.setCookieStore(COOKIE_STORE);
+            CloseableHttpResponse formResponse = httpClient.execute(httpPost, httpContext);
+            return parseResponse(formResponse, formCredential.getLoginUrl());
+        } catch (IOException e) {
+            logger.error("Form Login error : " + formCredential.getLoginUrl(), e);
+        }
+        return new HttpResponse();
+    }
+
+    public HttpResponse fetch(HttpRequest req) {
+        try {
+            final HttpClientContext httpContext = HttpClientContext.create();
+            if (options.getProxy() != null) {
+				AuthState authState = new AuthState();
+				authState.update(new BasicScheme(ChallengeState.PROXY), new UsernamePasswordCredentials(options.getProxy().getProxyUsername(), options.getProxy().getProxyPassword()));
+				httpContext.setAttribute(HttpClientContext.PROXY_AUTH_STATE, authState);
             }
-            if (config().getCookies() != null && !config().getCookies().isEmpty()) {
-                CookieStore cookieStore = new BasicCookieStore();
-                for (Map.Entry<String, String> cookieEntry : config().getCookies().entrySet()) {
+            if (options.getCookies() != null && !options.getCookies().isEmpty()) {
+                for (Map.Entry<String, String> cookieEntry : options.getCookies().entrySet()) {
                     BasicClientCookie cookie = new BasicClientCookie(cookieEntry.getKey(), cookieEntry.getValue());
                     cookie.setDomain(req.getWebURL().getDomain());
-                    cookieStore.addCookie(cookie);
+                    COOKIE_STORE.addCookie(cookie);
                 }
-                httpContext.setCookieStore(cookieStore);
             }
+            httpContext.setCookieStore(COOKIE_STORE);
             HttpUriRequest request = req.request();
-            response = httpClient.execute(request, httpContext);
-            HttpEntity httpEntity = response.getEntity();
-            if (config().isGzip() && httpEntity.isChunked()) {
-                httpResponse.setEntity(new GzipDecompressingEntity(httpEntity));
-            } else {
-                httpResponse.setEntity(httpEntity);
-            }
-            httpResponse.setHeaders(response.getAllHeaders());
-            httpResponse.setLocale(response.getLocale());
-            StatusLine statusLine = response.getStatusLine();
-            logger.info("Fetcher for [{}] : {}", req.getWebURL().getOrigin(), statusLine);
-            httpResponse.setStatusLine(statusLine);
-            int status = statusLine.getStatusCode();
-            if (status == HttpStatus.SC_MOVED_PERMANENTLY ||
-                    status == HttpStatus.SC_MOVED_TEMPORARILY ||
-                    status == HttpStatus.SC_MULTIPLE_CHOICES ||
-                    status == HttpStatus.SC_SEE_OTHER ||
-                    status == HttpStatus.SC_TEMPORARY_REDIRECT ||
-                    status == 308) {
-                Header header = response.getFirstHeader(HttpHeaders.LOCATION);
-                if (header != null) {
-                    httpResponse.setRedirectUrl(header.getValue());
-                }
-            }
+            CloseableHttpResponse response = httpClient.execute(request, httpContext);
+            return parseResponse(response, req.getWebURL().getOrigin());
         } catch (IOException e) {
-            logger.error("Error URI : " + req.getWebURL().getOrigin(), e);
+            logger.error("Error URL : " + req.getWebURL().getOrigin(), e);
+        }
+        return new HttpResponse();
+    }
+
+    private HttpResponse parseResponse(CloseableHttpResponse response, String url) {
+        HttpResponse httpResponse = new HttpResponse();
+        HttpEntity httpEntity = response.getEntity();
+        if (options.isGzip() && httpEntity.isChunked()) {
+            httpResponse.setEntity(new GzipDecompressingEntity(httpEntity));
+        } else {
+            httpResponse.setEntity(httpEntity);
+        }
+        httpResponse.setHeaders(response.getAllHeaders());
+        httpResponse.setLocale(response.getLocale());
+        StatusLine statusLine = response.getStatusLine();
+        logger.info("Fetcher for [{}] : {}", url, statusLine);
+        httpResponse.setStatusLine(statusLine);
+        int status = statusLine.getStatusCode();
+        if (status == HttpStatus.SC_MOVED_PERMANENTLY ||
+                status == HttpStatus.SC_MOVED_TEMPORARILY ||
+                status == HttpStatus.SC_MULTIPLE_CHOICES ||
+                status == HttpStatus.SC_SEE_OTHER ||
+                status == HttpStatus.SC_TEMPORARY_REDIRECT ||
+                status == 308) {
+            Header header = response.getFirstHeader(HttpHeaders.LOCATION);
+            if (header != null) {
+                httpResponse.setRedirectUrl(header.getValue());
+            }
         }
         return httpResponse;
     }
 
     public void shutdown() {
         try {
-            if (response != null) {
-                response.close();
-            }
             if (httpClient != null) {
                 httpClient.close();
             }
@@ -227,10 +239,6 @@ public class Fetcher {
 
     public Options options() {
         return this.options;
-    }
-
-    protected Configuration config() {
-        return this.options.config();
     }
 
 }

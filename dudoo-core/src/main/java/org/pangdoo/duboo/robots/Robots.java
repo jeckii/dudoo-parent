@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
-import org.pangdoo.duboo.fetcher.Configuration;
 import org.pangdoo.duboo.fetcher.Fetcher;
 import org.pangdoo.duboo.fetcher.Options;
 import org.pangdoo.duboo.http.HttpResponse;
@@ -25,19 +24,14 @@ public class Robots {
 	
 	private static final String DISALLOW_ITEM = "disallow";
 	
-	private Configuration config;
-	
 	private Fetcher fetcher;
 	
 	private Map<String, List<String>> items;
-	
-	public Robots(Configuration config) {
-		this.config = config;
-		this.fetcher = Fetcher.custom(Options.custom(config));
-	}
+
+	private Options options;
 
 	public Robots(Options options) {
-		this.config = options.config();
+		this.options = options;
 		this.fetcher = Fetcher.custom(options).build();
 	}
 
@@ -58,8 +52,8 @@ public class Robots {
 	    	if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == 200) {
 	    		HttpEntity entity = response.getEntity();
 	    		if (entity != null) {
-	    			RobotsParser reader = new RobotsParser(entity.getContent(), config.getCharset());
-		        	items = reader.items(config.getUserAgent());
+	    			RobotsParser reader = new RobotsParser(entity.getContent(), options.getCharset());
+		        	items = reader.items(options.getUserAgent());
 		        	Robot robot = new Robot();
 		        	robot.setAllow(allow());
 		        	robot.setDisallow(disallow());

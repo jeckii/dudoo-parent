@@ -7,6 +7,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.pangdoo.duboo.http.authentication.Credential;
 import org.pangdoo.duboo.url.IllegalURLException;
 import org.pangdoo.duboo.url.WebURL;
 
@@ -18,7 +19,7 @@ public abstract class HttpRequest {
 	
 	protected Map<String, String> headers;
 
-	protected CredentialsProvider credsProvider;
+	protected Credential credential;
 
 	public void setWebURL(WebURL webURL) {
 		this.webURL = webURL;
@@ -43,14 +44,14 @@ public abstract class HttpRequest {
 		headers.put(name, value);
 	}
 
-	public CredentialsProvider getCredsProvider() {
-		return credsProvider;
+	public Credential getCredential() {
+		return credential;
 	}
 
-	public void setCredsProvider(CredentialsProvider credsProvider) {
-		this.credsProvider = credsProvider;
+	public void setCredential(Credential credential) {
+		this.credential = credential;
 	}
-	
+
 	public String getCharset() {
 		return charset;
 	}
@@ -61,14 +62,6 @@ public abstract class HttpRequest {
 
 	public HttpRequest(WebURL webURL) {
 		this.webURL = webURL;
-	}
-	
-	public void setProxy(String proxyHost, int proxyPort, String proxyUsername, String proxyPassword) {
-		if (this.credsProvider == null) {
-			throw new NoCredentialException("Credentials provider is null.");
-		}
-		this.credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
-				new UsernamePasswordCredentials(proxyUsername, proxyPassword));
 	}
 	
 	public HttpRequest() {

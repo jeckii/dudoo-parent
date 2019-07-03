@@ -1,15 +1,11 @@
-package org.pangdoo.duboo.http.auth;
+package org.pangdoo.duboo.http.authentication;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.pangdoo.duboo.http.HttpRequest;
 import org.pangdoo.duboo.url.IllegalURLException;
 import org.pangdoo.duboo.url.NoURLException;
@@ -18,15 +14,13 @@ import org.pangdoo.duboo.url.WebURL;
 
 public class AuthHttpGet extends HttpRequest {
 	
-	public AuthHttpGet(String host, int port, Credentials credentials) {
-		this(host, port, credentials, null);
+	public AuthHttpGet(Credential credential) {
+		this(credential, null);
 	}
 
-	public AuthHttpGet(String host, int port, Credentials credentials, WebURL webUrl) {
+	public AuthHttpGet(Credential credential, WebURL webUrl) {
 		super(webUrl);
-		CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(host, port), credentials);
-		setCredsProvider(credsProvider);
+		super.credential = credential;
 	}
 
 	@Override

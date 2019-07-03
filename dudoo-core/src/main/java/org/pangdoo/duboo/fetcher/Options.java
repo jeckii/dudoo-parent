@@ -1,13 +1,15 @@
 package org.pangdoo.duboo.fetcher;
 
+import org.apache.http.client.config.CookieSpecs;
 import org.pangdoo.duboo.http.Proxy;
 import org.pangdoo.duboo.util.LogLogger;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Options {
 
-    private LogLogger logger = LogLogger.getLogger(this.getClass());
-
-    private Configuration config;
+    private final LogLogger logger = LogLogger.getLogger(this.getClass());
 
     /**
      * Initialize the Options of Fetcher.
@@ -17,45 +19,138 @@ public class Options {
         return new Options();
     }
 
-    public static Options custom(Configuration configuration) {
-        return new Options(configuration);
+    private Options() {
     }
 
-    protected Options(Configuration configuration) {
-        this.config = configuration;
+    private Integer maxDepth = 1;
+
+    private String cookieSpec = CookieSpecs.STANDARD;
+
+    private int connectTimeout = 10000;
+
+    private int connectionRequestTimeout = 5000;
+
+    private int socketTimeout = 1000;
+
+    private int maxConnectionsPerHost = 100;
+
+    private int maxTotalConnections = 100;
+
+    private Map<String, String> cookies = new HashMap<String, String>();
+
+    private String userAgent = "dudoo";
+
+    private int delay = 1000;
+
+    private String charset = "UTF-8";
+
+    private boolean gzip = false;
+
+    public Integer getMaxDepth() {
+        return maxDepth;
     }
 
-    protected Options() {
-        this.config = new Configuration();
+    public void setMaxDepth(Integer maxDepth) {
+        this.maxDepth = maxDepth;
     }
+
+    public String getCookieSpec() {
+        return cookieSpec;
+    }
+
+    public void setCookieSpec(String cookieSpec) {
+        this.cookieSpec = cookieSpec;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public int getConnectionRequestTimeout() {
+        return connectionRequestTimeout;
+    }
+
+    public void setConnectionRequestTimeout(int connectionRequestTimeout) {
+        this.connectionRequestTimeout = connectionRequestTimeout;
+    }
+
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
+    }
+
+    public int getMaxConnectionsPerHost() {
+        return maxConnectionsPerHost;
+    }
+
+    public void setMaxConnectionsPerHost(int maxConnectionsPerHost) {
+        this.maxConnectionsPerHost = maxConnectionsPerHost;
+    }
+
+    public int getMaxTotalConnections() {
+        return maxTotalConnections;
+    }
+
+    public void setMaxTotalConnections(int maxTotalConnections) {
+        this.maxTotalConnections = maxTotalConnections;
+    }
+
+    public Map<String, String> getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(Map<String, String> cookies) {
+        this.cookies = cookies;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    public boolean isGzip() {
+        return gzip;
+    }
+
+    public void setGzip(boolean gzip) {
+        this.gzip = gzip;
+    }
+
+    private Proxy proxy;
 
     public Options setProxy(Proxy proxy) {
-        try {
-            if (null == proxy)
-                throw new IllegalAccessException("Proxy is null.");
-            this.config.setProxyHost(proxy.getProxyHost());
-            this.config.setProxyPort(proxy.getProxyPort());
-            this.config.setProxyUsername(proxy.getProxyUsername());
-            this.config.setProxyPassword(proxy.getProxyPassword());
-            return this;
-        } catch (IllegalAccessException e) {
-            logger.error(e);
-        }
-        return null;
-    }
-
-    public Options setUserAgent(String userAgent) {
-        this.config.setUserAgent(userAgent);
+        this.proxy = proxy;
         return this;
     }
 
-    public Options setCharset(String charset) {
-        this.config.setCharset(charset);
-        return this;
-    }
-
-    public Configuration config() {
-        return this.config;
+    public Proxy getProxy() {
+        return proxy;
     }
 
 }
