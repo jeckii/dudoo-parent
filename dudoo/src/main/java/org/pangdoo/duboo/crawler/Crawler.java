@@ -15,6 +15,8 @@ import org.pangdoo.duboo.url.WebURL;
 import org.pangdoo.duboo.url.collector.DefaultURLCollector;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class Crawler {
@@ -47,10 +49,10 @@ public class Crawler {
         return this;
     }
 
-    private Processor processor;
+    private final List<Processor> processors = new LinkedList<>();
 
     public Crawler process(Processor processor) {
-        this.processor = processor;
+        this.processors.add(processor);
         return this;
     }
 
@@ -132,8 +134,10 @@ public class Crawler {
             }
             httpRequest.setWebURL(url);
             HttpResponse httpResponse = fetcher.fetch(httpRequest);
-            if (this.processor != null) {
-                this.processor.process(httpResponse.getEntity(), url);
+            if (!this.processors.isEmpty()) {
+                for (Processor processor : this.processors) {
+                    processor.process(httpResponse.getEntity(), url);
+                }
             }
         }
         fetcher.shutdown();

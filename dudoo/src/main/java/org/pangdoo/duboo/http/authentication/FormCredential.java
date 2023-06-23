@@ -8,14 +8,44 @@ public class FormCredential extends Credential {
 
     private String passwordKey;
 
-    public FormCredential() {
+    private FormCredential() {
     }
 
-    public FormCredential(String username, String password, String loginUrl, String usernameKey, String passwordKey) {
+    public static FormCredential custom() {
+        return new FormCredential();
+    }
+
+    private FormCredential(String username, String password) {
         super(username, password);
-        this.loginUrl = loginUrl;
+    }
+
+    public static FormCredential custom(String username, String password) {
+        return new FormCredential(username, password);
+    }
+
+    public FormCredential username(String username) {
+        super.setUsername(username);
+        return this;
+    }
+
+    public FormCredential password(String password) {
+        super.setPassword(password);
+        return this;
+    }
+
+    public FormCredential usernameKey(String usernameKey) {
         this.usernameKey = usernameKey;
+        return this;
+    }
+
+    public FormCredential passwordKey(String passwordKey) {
         this.passwordKey = passwordKey;
+        return this;
+    }
+
+    public FormCredential loginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+        return this;
     }
 
     public String getLoginUrl() {

@@ -16,6 +16,30 @@ public final class DefaultURLCollector implements URLCollector {
     public DefaultURLCollector() {
     }
 
+    public static DefaultURLCollector custom() {
+        return new DefaultURLCollector();
+    }
+
+    public DefaultURLCollector url(String url) {
+        this.add(url);
+        return this;
+    }
+
+    public DefaultURLCollector url(String url, int depth) {
+        this.add(url, depth);
+        return this;
+    }
+
+    public DefaultURLCollector urls(Collection<String> urls) {
+        this.addAll(urls);
+        return this;
+    }
+
+    public DefaultURLCollector urls(Collection<String> urls, int depth) {
+        this.addAll(urls, depth);
+        return this;
+    }
+
     public DefaultURLCollector(Collection<String> urls, int depth) {
         addAll(urls, depth);
     }

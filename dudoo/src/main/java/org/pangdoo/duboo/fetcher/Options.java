@@ -50,96 +50,108 @@ public class Options {
         return maxDepth;
     }
 
-    public void setMaxDepth(Integer maxDepth) {
+    public Options setMaxDepth(Integer maxDepth) {
         this.maxDepth = maxDepth;
+        return this;
     }
 
     public String getCookieSpec() {
         return cookieSpec;
     }
 
-    public void setCookieSpec(String cookieSpec) {
+    public Options setCookieSpec(String cookieSpec) {
         this.cookieSpec = cookieSpec;
+        return this;
     }
 
     public int getConnectTimeout() {
         return connectTimeout;
     }
 
-    public void setConnectTimeout(int connectTimeout) {
+    public Options setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
+        return this;
     }
 
     public int getConnectionRequestTimeout() {
         return connectionRequestTimeout;
     }
 
-    public void setConnectionRequestTimeout(int connectionRequestTimeout) {
+    public Options setConnectionRequestTimeout(int connectionRequestTimeout) {
         this.connectionRequestTimeout = connectionRequestTimeout;
+        return this;
     }
 
     public int getSocketTimeout() {
         return socketTimeout;
     }
 
-    public void setSocketTimeout(int socketTimeout) {
+    public Options setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
+        return this;
     }
 
     public int getMaxConnectionsPerHost() {
         return maxConnectionsPerHost;
     }
 
-    public void setMaxConnectionsPerHost(int maxConnectionsPerHost) {
+    public Options setMaxConnectionsPerHost(int maxConnectionsPerHost) {
         this.maxConnectionsPerHost = maxConnectionsPerHost;
+        return this;
     }
 
     public int getMaxTotalConnections() {
         return maxTotalConnections;
     }
 
-    public void setMaxTotalConnections(int maxTotalConnections) {
+    public Options setMaxTotalConnections(int maxTotalConnections) {
         this.maxTotalConnections = maxTotalConnections;
+        return this;
     }
 
     public Map<String, String> getCookies() {
         return cookies;
     }
 
-    public void setCookies(Map<String, String> cookies) {
+    public Options setCookies(Map<String, String> cookies) {
         this.cookies = cookies;
+        return this;
     }
 
     public String getUserAgent() {
         return userAgent;
     }
 
-    public void setUserAgent(String userAgent) {
+    public Options setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+        return this;
     }
 
     public int getDelay() {
         return delay;
     }
 
-    public void setDelay(int delay) {
+    public Options setDelay(int delay) {
         this.delay = delay;
+        return this;
     }
 
     public String getCharset() {
         return charset;
     }
 
-    public void setCharset(String charset) {
+    public Options setCharset(String charset) {
         this.charset = charset;
+        return this;
     }
 
     public boolean isGzip() {
         return gzip;
     }
 
-    public void setGzip(boolean gzip) {
+    public Options setGzip(boolean gzip) {
         this.gzip = gzip;
+        return this;
     }
 
     private Proxy proxy;

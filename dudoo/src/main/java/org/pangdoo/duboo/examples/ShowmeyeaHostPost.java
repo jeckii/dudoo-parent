@@ -14,16 +14,13 @@ public class ShowmeyeaHostPost {
 
 		Options options = Options.opts();
 		Crawler.custom().url("http://www.showmeyea.com/app/smy/api/hotspot/update")
-				.process(new Processor() {
-					@Override
-					public void process(HttpEntity entity, Object obj) {
-						if (entity.isChunked() || entity.getContentLength() > 0) {
-							try {
-								RobotsParser parser = new RobotsParser(entity.getContent(), "UTF-8");
-								System.out.println(parser.getContent());
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+				.process((entity, obj) -> {
+					if (entity.isChunked() || entity.getContentLength() > 0) {
+						try {
+							RobotsParser parser = new RobotsParser(entity.getContent(), "UTF-8");
+							System.out.println(parser.getContent());
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 					}
 				})
